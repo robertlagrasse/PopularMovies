@@ -23,9 +23,15 @@ import android.widget.Toast;
  */
 public class GridFragment extends Fragment {
 
+    // Interface reference variable
+    Communicator communicator;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.grid_fragment, container, false);
+
+        // Point my Interface reference variable at the activity that spawned this fragment.
+        communicator = (Communicator) getActivity();
 
         // inflate the gridview, set ImageAdapter on it to populate with some dummy images
         GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
@@ -38,6 +44,9 @@ public class GridFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view,
                                     int position, long id) {
                 Log.e("GridFragment()", "Item Clicked at Position: " + position);
+                // use the interface to pass position data to the respond method in the
+                // activity the interface reference variable points to.
+                communicator.respond(position);
             }
         });
 
