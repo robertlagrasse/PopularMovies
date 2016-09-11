@@ -2,11 +2,13 @@ package com.example.android.popularmovies;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
 public class MainActivity extends AppCompatActivity implements Communicator{
+    public final static String EXTRA_MESSAGE = "com.example.android.popularmovies.MESSAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,11 @@ public class MainActivity extends AppCompatActivity implements Communicator{
     @Override
     public void respond(int data) {
         Log.e("MainActivity", "Data passed via Interface: " + data);
+
+        String message = String.valueOf(data);
+        Intent intent = new Intent (this, DisplayActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(intent);
     }
 }
 
