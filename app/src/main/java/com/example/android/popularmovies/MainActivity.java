@@ -1,11 +1,14 @@
 package com.example.android.popularmovies;
 
+import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity implements Communicator{
     public final static String EXTRA_MESSAGE = "com.example.android.popularmovies.MESSAGE";
@@ -23,6 +26,26 @@ public class MainActivity extends AppCompatActivity implements Communicator{
         GridFragment gridFragment = new GridFragment();
         fragmentTransaction.add(R.id.activity_main, gridFragment);
         fragmentTransaction.commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch(id){
+            case R.id.action_settings:
+                Intent intent = new Intent (this, MenuActivity.class);
+                startActivity(intent);
+
+        }
+
+        return true;
     }
 
     @Override
