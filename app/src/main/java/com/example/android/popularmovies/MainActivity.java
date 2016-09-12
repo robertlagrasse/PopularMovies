@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,9 @@ public class MainActivity extends AppCompatActivity implements Communicator{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // When the application fires up, set the default preferences
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         // Create a FragmentManager and start a fragmentTransaction
         FragmentManager fragmentManager = getFragmentManager();

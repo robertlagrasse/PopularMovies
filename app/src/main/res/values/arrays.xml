@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="preferences_entries_sort_by">
+        <item>@string/preferences_entry_sort_by_popularity</item>
+        <item>@string/preferences_entry_sort_by_rating</item>
+    </string-array>
+
+    <string name="preferences_entry_sort_by_popularity">Popularity</string>
+    <string name="preferences_entry_sort_by_rating">Rating</string>
+
+    <string-array name="preferences_entryValues_sort_by">
+        <item>@string/preferences_entryValue_sort_by_popularity</item>
+        <item>@string/preferences_entryValue_sort_by_rating</item>
+    </string-array>
+
+    <string name="preferences_entryValue_sort_by_popularity">sort_by_popularity</string>
+    <string name="preferences_entryValue_sort_by_rating">sort_by_rating</string>
+</resources>

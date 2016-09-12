@@ -1,13 +1,15 @@
 package com.example.android.popularmovies;
 
+import android.preference.PreferenceActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class MenuActivity extends AppCompatActivity {
+public class MenuActivity extends PreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.menu_activity);
+        addPreferencesFromResource(R.xml.preferences);
     }
+
 }
