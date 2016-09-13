@@ -28,9 +28,9 @@ public class MainActivity extends AppCompatActivity implements Communicator{
 
         // Create an instance of GridFragment and drop it on activity_main
         GridFragment gridFragment = new GridFragment();
-        TMDBQueryManagerFragment tmdbQueryManagerFragment = new TMDBQueryManagerFragment();
+        // TMDBQueryManagerFragment tmdbQueryManagerFragment = new TMDBQueryManagerFragment();
         fragmentTransaction.add(R.id.activity_main, gridFragment);
-        fragmentTransaction.add(tmdbQueryManagerFragment, "tmdb-qmf");
+        // fragmentTransaction.add(tmdbQueryManagerFragment, "tmdb-qmf");
         fragmentTransaction.commit();
     }
 
