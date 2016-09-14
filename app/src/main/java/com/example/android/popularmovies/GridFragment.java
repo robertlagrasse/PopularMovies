@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -28,6 +29,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * Created by robert on 9/10/16.
@@ -35,6 +37,8 @@ import java.net.URL;
  * the user's choice back to the calling activity.
  */
 public class GridFragment extends Fragment {
+
+    private ArrayAdapter<String> mMovieAdapter;
 
     // Interface reference variable
     Communicator communicator;
@@ -55,9 +59,20 @@ public class GridFragment extends Fragment {
 
         fetch.execute("Shaft!");
 
+        mMovieAdapter =
+                new ArrayAdapter<String>(
+                        getActivity(), // The current context (this activity)
+                        R.layout.grid_fragment, // The name of the grid.
+                   //     R.id.list_item_forecast_textview, // The ID of the textview to populate.
+                        new ArrayList<String>());
+
+
+
         // inflate the gridview, set ImageAdapter on it to populate with some dummy images
         GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
-        gridview.setAdapter(new ImageAdapter(getActivity()));
+        gridview.setAdapter(mMovieAdapter);
+
+        // TODO : set image adapter on gridview
 
         // Listen for user interaction.
         // For now, drop something in the logs.
@@ -75,60 +90,60 @@ public class GridFragment extends Fragment {
         return rootView;
     }
 
-    // adapted from https://developer.android.com/guide/topics/ui/layout/gridview.html
-    public class ImageAdapter extends BaseAdapter {
-        private Context mContext;
+//    // adapted from https://developer.android.com/guide/topics/ui/layout/gridview.html
+//    public class ImageAdapter extends BaseAdapter {
+//        private Context mContext;
+//
+//        public ImageAdapter(Context c) {
+//            mContext = c;
+//        }
+//
+//        public int getCount() {
+//            return mThumbIds.length;
+//        }
+//
+//        public Object getItem(int position) {
+//            return null;
+//        }
+//
+//        public long getItemId(int position) {
+//            return 0;
+//        }
+//
+//        // create a new ImageView for each item referenced by the Adapter
+//        public View getView(int position, View convertView, ViewGroup parent) {
+//            ImageView imageView;
+//            if (convertView == null) {
+//                // if it's not recycled, initialize some attributes
+//                imageView = new ImageView(mContext);
+//                imageView.setLayoutParams(new GridView.LayoutParams(240, 240));
+//                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//                imageView.setPadding(8, 8, 8, 8);
+//            } else {
+//                imageView = (ImageView) convertView;
+//            }
+//
+//            imageView.setImageResource(mThumbIds[position]);
+//            return imageView;
+//        }
+//
+//        // references to our images
+//        private Integer[] mThumbIds = {
+//                R.drawable.sample_2, R.drawable.sample_3,
+//                R.drawable.sample_4, R.drawable.sample_5,
+//                R.drawable.sample_6, R.drawable.sample_7,
+//                R.drawable.sample_0, R.drawable.sample_1,
+//                R.drawable.sample_2, R.drawable.sample_3,
+//                R.drawable.sample_4, R.drawable.sample_5,
+//                R.drawable.sample_6, R.drawable.sample_7,
+//                R.drawable.sample_0, R.drawable.sample_1,
+//                R.drawable.sample_2, R.drawable.sample_3,
+//                R.drawable.sample_4, R.drawable.sample_5,
+//                R.drawable.sample_6, R.drawable.sample_7
+//        };
+//    }
 
-        public ImageAdapter(Context c) {
-            mContext = c;
-        }
-
-        public int getCount() {
-            return mThumbIds.length;
-        }
-
-        public Object getItem(int position) {
-            return null;
-        }
-
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        // create a new ImageView for each item referenced by the Adapter
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ImageView imageView;
-            if (convertView == null) {
-                // if it's not recycled, initialize some attributes
-                imageView = new ImageView(mContext);
-                imageView.setLayoutParams(new GridView.LayoutParams(240, 240));
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setPadding(8, 8, 8, 8);
-            } else {
-                imageView = (ImageView) convertView;
-            }
-
-            imageView.setImageResource(mThumbIds[position]);
-            return imageView;
-        }
-
-        // references to our images
-        private Integer[] mThumbIds = {
-                R.drawable.sample_2, R.drawable.sample_3,
-                R.drawable.sample_4, R.drawable.sample_5,
-                R.drawable.sample_6, R.drawable.sample_7,
-                R.drawable.sample_0, R.drawable.sample_1,
-                R.drawable.sample_2, R.drawable.sample_3,
-                R.drawable.sample_4, R.drawable.sample_5,
-                R.drawable.sample_6, R.drawable.sample_7,
-                R.drawable.sample_0, R.drawable.sample_1,
-                R.drawable.sample_2, R.drawable.sample_3,
-                R.drawable.sample_4, R.drawable.sample_5,
-                R.drawable.sample_6, R.drawable.sample_7
-        };
-    }
-
-    public class FetchMoviesTask extends AsyncTask<String, Void, String> {
+    public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
 
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
@@ -137,7 +152,7 @@ public class GridFragment extends Fragment {
         // .execute() method.
         //
         @Override
-        protected String doInBackground(String... strings) {
+        protected String[] doInBackground(String... strings) {
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -211,10 +226,8 @@ public class GridFragment extends Fragment {
                 }
             }
             try {
-                // Send rawData to be reformatted before returning
-                // This should be what happens if everything goes as planned.
-                // This return actually directs to onPostExecute()
-                Log.e("TMDB-QMF", "reformatMovieData(" + rawData + ")");
+                // reformatMovieData() parses JSON and builds a String array
+                // what we return here goes directly to onPostExecute()
                 return reformatMovieData(rawData);
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
@@ -228,7 +241,7 @@ public class GridFragment extends Fragment {
 
         // This method takes raw Json input and extracts values
         // It's just a placeholder for now
-        private String reformatMovieData(String rawInput)
+        private String[] reformatMovieData(String rawInput)
                 throws JSONException {
 
             // These are the JSON elements we need to extract
@@ -245,22 +258,18 @@ public class GridFragment extends Fragment {
             String[] extracted = new String[movieArray.length()];
             for(int i = 0; i < movieArray.length(); i++) {
 
+                // Build a String array out of the movie objects.
                 JSONObject movie = movieArray.getJSONObject(i);
-
-                Log.e("movieArray", "element: " + i);
-                Log.e("movieArray", POPULARTIY + movie.getString(POPULARTIY));
-                Log.e("movieArray", POSTER_PATH + movie.getString(POSTER_PATH));
-                Log.e("movieArray", RELEASE_DATE + movie.getString(RELEASE_DATE));
-                Log.e("movieArray", TITLE + movie.getString(TITLE));
-                Log.e("movieArray", VOTE_AVERAGE + movie.getString(VOTE_AVERAGE));
+                extracted[i] = movie.toString();
             }
 
-            return rawInput;
+            // This returns to doInBackground, which immediately returns this result
+            return extracted;
         }
 
         @Override
-        protected void onPostExecute(String result) {
-            Log.e("onPostExecute", result);
+        protected void onPostExecute(String[] result) {
+            Log.e("onPostExecute", result[0]);
 
 
 
