@@ -72,6 +72,7 @@ public class DisplayActivity extends AppCompatActivity {
         //Grab a reference to the ratingBar
         RatingBar ratingBar = (RatingBar) findViewById(R.id.rating_bar);
         float rating = Float.parseFloat(movie.get(MOVIE_VOTE_AVERAGE));
+        // TMDB is on a 10 point system, we show on a 5 star scale
         ratingBar.setRating((float) (rating/2.0));
 
 

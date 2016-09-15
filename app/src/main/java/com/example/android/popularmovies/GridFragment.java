@@ -53,38 +53,43 @@ public class GridFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String sortBy = userPreferences.getString(getString(R.string.preferences_key_sort_by),getString(R.string.preferences_entryValue_sort_by_rating));
-        updateMovies(sortBy);
+        updateMovies();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.grid_fragment, container, false);
 
+        // This is a reference to the calling activity, and is what allows us
+        // to send information back. Calling activity implements Communicator
         communicator = (Communicator) getActivity();
+
         // Build a place for a bunch of movie objects to wait for something to do
         theHopper = new ArrayList<>();
 
-        SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String sortBy = userPreferences.getString(getString(R.string.preferences_key_sort_by),getString(R.string.preferences_entryValue_sort_by_rating));
-        // Go build the movie objects and put them in theHopper
-        updateMovies(sortBy);
+        updateMovies();
 
+        // Build a reference to the gridview
         GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
+
+        // Build a new ImageAdapter to connect theHopper to the gridview
         imageAdapter = new ImageAdapter(getActivity(), R.id.gridview, theHopper);
+
+        // Connect the imageAdapter to the gridview
         gridview.setAdapter(imageAdapter);
 
+        // Make the gridview listen for clicks
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view,
                                     int position, long id) {
 
+            // When someone clicks, do this:
                 // Build an ArrayList to hold the information passed
                 ArrayList<String> showTime = new ArrayList<String>();
 
-                // Populate the ArrayList
+                // Populate the ArrayList with all of the elements in
+                // the movie object referenced in the position.
                 showTime.add(theHopper.get(position).getMovie_poster_path());
                 showTime.add(theHopper.get(position).getMovie_adult());
                 showTime.add(theHopper.get(position).getMovie_overview());
@@ -100,6 +105,9 @@ public class GridFragment extends Fragment {
                 showTime.add(theHopper.get(position).getMovie_video());
                 showTime.add(theHopper.get(position).getMovie_vote_average());
 
+                // Send the array list back to the Activity that spawned this fragment
+                // The activity must implement Communicator, and must also implement
+                // the .respond() method.
                 communicator.respond(showTime);
             }
         });
@@ -118,6 +126,7 @@ public class GridFragment extends Fragment {
             super(context, resource, objects);
             mContext = context;
             mMovies = objects;
+            mResource = resource;
         }
 
         public int getCount() {
@@ -154,7 +163,7 @@ public class GridFragment extends Fragment {
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
         @Override
-        protected ArrayList<MovieObject> doInBackground(String... sortOrder) {
+        protected ArrayList<MovieObject> doInBackground(String... strings) {
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -164,11 +173,12 @@ public class GridFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String rawData = null;
 
+
+
             try {
                 // Constants to identify parameters and corresponding values
                 // for use in the construction of the URL
 
-                final String PARAMETER_BASE_URL                 =   null;
                 final String VALUE_BASE_URL                     =   "https://api.themoviedb.org/3/discover/movie?";
 
                 final String PARAMETER_SORT_BY                  =   "sort_by";
@@ -178,11 +188,18 @@ public class GridFragment extends Fragment {
                 final String PARAMETER_API_KEY                  =   "api_key";
                 final String VALUE_API_KEY                      =   "f42ec8a4b30bcaf191a165668a819fda";
 
+                // Grab user preferences
+                SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String sortBy = userPreferences.getString(getString(R.string.preferences_key_sort_by),getString(R.string.preferences_entryValue_sort_by_rating));
 
-            String value_sort_by = null;
-             if (sortOrder[0].equals("sort_by_popularity")) {
+                // Use the preferences to make some decisions about the way we search
+                String value_sort_by = "";
+                if (sortBy.equals("sort_by_popularity")) {
                     value_sort_by = VALUE_SORT_BY_POPULARITY;
-                } else value_sort_by = VALUE_SORT_BY_RATING;
+                    } else {
+                     value_sort_by = VALUE_SORT_BY_RATING;
+                }
+
                 // Build the URL
                 Uri builtUri = Uri.parse(VALUE_BASE_URL).buildUpon()
                         .appendQueryParameter(PARAMETER_SORT_BY, value_sort_by)
@@ -214,6 +231,7 @@ public class GridFragment extends Fragment {
                     // Stream was empty.  No point in parsing.
                     return null;
                 }
+                // If everything worked out with the connection, dump the buffer into rawData
                 rawData = buffer.toString();
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
@@ -321,8 +339,8 @@ public class GridFragment extends Fragment {
         }
     }
 
-    private void updateMovies(String preferences){
+    private void updateMovies(){
         FetchMoviesTask fetch = new FetchMoviesTask();
-        fetch.execute(preferences);
+        fetch.execute();
     }
 }

@@ -51,9 +51,7 @@ public class MainActivity extends AppCompatActivity implements Communicator{
             case R.id.action_settings:
                 Intent intent = new Intent (this, MenuActivity.class);
                 startActivity(intent);
-
         }
-
         return true;
     }
 
