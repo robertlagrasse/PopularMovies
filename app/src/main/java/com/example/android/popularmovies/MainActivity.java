@@ -11,8 +11,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements Communicator{
     public final static String EXTRA_MESSAGE = "com.example.android.popularmovies.MESSAGE";
+    public final static String MOVIE_DETAILS = "movie_details";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,13 +58,19 @@ public class MainActivity extends AppCompatActivity implements Communicator{
     }
 
     @Override
-    public void respond(int data) {
-        Log.e("MainActivity", "Data passed via Interface: " + data);
+    public void respond(ArrayList<String> data) {
 
-        String message = String.valueOf(data);
-        Intent intent = new Intent (this, DisplayActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, message);
-        startActivity(intent);
+        // An ArrayList called data has arrived. It needs to be passed via Intent
+        // to DisplayActivity.
+
+        // First, create the intent
+        Intent showMovieDetails = new Intent (this, DisplayActivity.class);
+
+        // Next, attach the data to the intent
+        showMovieDetails.putExtra(MOVIE_DETAILS, data);
+
+        // Finally, start the activity
+        startActivity(showMovieDetails);
     }
 }
 

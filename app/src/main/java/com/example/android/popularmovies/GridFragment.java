@@ -3,12 +3,15 @@ package com.example.android.popularmovies;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Movie;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +51,15 @@ public class GridFragment extends Fragment {
     ImageAdapter imageAdapter;
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sortBy = userPreferences.getString(getString(R.string.preferences_key_sort_by),getString(R.string.preferences_entryValue_sort_by_rating));
+        updateMovies(sortBy);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.grid_fragment, container, false);
 
@@ -55,9 +67,10 @@ public class GridFragment extends Fragment {
         // Build a place for a bunch of movie objects to wait for something to do
         theHopper = new ArrayList<>();
 
-
+        SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sortBy = userPreferences.getString(getString(R.string.preferences_key_sort_by),getString(R.string.preferences_entryValue_sort_by_rating));
         // Go build the movie objects and put them in theHopper
-        updateMovies();
+        updateMovies(sortBy);
 
         GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
         imageAdapter = new ImageAdapter(getActivity(), R.id.gridview, theHopper);
@@ -67,16 +80,27 @@ public class GridFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view,
                                     int position, long id) {
-                Log.e("OnItemClick", theHopper.get(position).getMovie_poster_path());
-                Log.e("OnItemClick", theHopper.get(position).getMovie_adult());
-                Log.e("OnItemClick", theHopper.get(position).getMovie_backdrop_path());
-                Log.e("OnItemClick", theHopper.get(position).getMovie_genre_ids());
-                Log.e("OnItemClick", theHopper.get(position).getMovie_id());
-                Log.e("OnItemClick", theHopper.get(position).getMovie_original_language());
-                Log.e("OnItemClick", theHopper.get(position).getMovie_original_title());
-                Log.e("OnItemClick", theHopper.get(position).getMovie_overview());
-                Log.e("OnItemClick", theHopper.get(position).getMovie_release_date());
-                communicator.respond(position);
+
+                // Build an ArrayList to hold the information passed
+                ArrayList<String> showTime = new ArrayList<String>();
+
+                // Populate the ArrayList
+                showTime.add(theHopper.get(position).getMovie_poster_path());
+                showTime.add(theHopper.get(position).getMovie_adult());
+                showTime.add(theHopper.get(position).getMovie_overview());
+                showTime.add(theHopper.get(position).getMovie_release_date());
+                showTime.add(theHopper.get(position).getMovie_genre_ids());
+                showTime.add(theHopper.get(position).getMovie_id());
+                showTime.add(theHopper.get(position).getMovie_original_title());
+                showTime.add(theHopper.get(position).getMovie_original_language());
+                showTime.add(theHopper.get(position).getMovie_title());
+                showTime.add(theHopper.get(position).getMovie_backdrop_path());
+                showTime.add(theHopper.get(position).getMovie_popularity());
+                showTime.add(theHopper.get(position).getMovie_vote_count());
+                showTime.add(theHopper.get(position).getMovie_video());
+                showTime.add(theHopper.get(position).getMovie_vote_average());
+
+                communicator.respond(showTime);
             }
         });
 
@@ -130,7 +154,7 @@ public class GridFragment extends Fragment {
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
         @Override
-        protected ArrayList<MovieObject> doInBackground(String... strings) {
+        protected ArrayList<MovieObject> doInBackground(String... sortOrder) {
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -144,17 +168,24 @@ public class GridFragment extends Fragment {
                 // Constants to identify parameters and corresponding values
                 // for use in the construction of the URL
 
-                final String PARAMETER_BASE_URL     =   null;
-                final String VALUE_BASE_URL         =   "https://api.themoviedb.org/3/discover/movie?";
+                final String PARAMETER_BASE_URL                 =   null;
+                final String VALUE_BASE_URL                     =   "https://api.themoviedb.org/3/discover/movie?";
 
-                final String PARAMETER_SORT_BY      =   "sort_by";
-                final String VALUE_SORT_BY          =   "popularity.desc";
-                final String PARAMETER_API_KEY      =   "api_key";
-                final String VALUE_API_KEY          =   "f42ec8a4b30bcaf191a165668a819fda";
+                final String PARAMETER_SORT_BY                  =   "sort_by";
+                final String VALUE_SORT_BY_POPULARITY           =   "popularity.desc";
+                final String VALUE_SORT_BY_RATING               =   "vote_average.desc";
 
+                final String PARAMETER_API_KEY                  =   "api_key";
+                final String VALUE_API_KEY                      =   "f42ec8a4b30bcaf191a165668a819fda";
+
+
+            String value_sort_by = null;
+             if (sortOrder[0].equals("sort_by_popularity")) {
+                    value_sort_by = VALUE_SORT_BY_POPULARITY;
+                } else value_sort_by = VALUE_SORT_BY_RATING;
                 // Build the URL
                 Uri builtUri = Uri.parse(VALUE_BASE_URL).buildUpon()
-                        .appendQueryParameter(PARAMETER_SORT_BY, VALUE_SORT_BY)
+                        .appendQueryParameter(PARAMETER_SORT_BY, value_sort_by)
                         .appendQueryParameter(PARAMETER_API_KEY, VALUE_API_KEY)
                         .build();
 
@@ -219,8 +250,8 @@ public class GridFragment extends Fragment {
                 throws JSONException {
 
             // These are the JSON elements we need to extract
-
             final String MOVIE_RESULTS              = "results";
+
             final String MOVIE_POSTER_PATH          = "poster_path";
             final String MOVIE_ADULT                = "adult";
             final String MOVIE_OVERVIEW             = "overview";
@@ -290,8 +321,8 @@ public class GridFragment extends Fragment {
         }
     }
 
-    private void updateMovies(){
+    private void updateMovies(String preferences){
         FetchMoviesTask fetch = new FetchMoviesTask();
-        fetch.execute("Shaft!");
+        fetch.execute(preferences);
     }
 }

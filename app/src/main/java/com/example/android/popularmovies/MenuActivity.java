@@ -14,7 +14,6 @@ public class MenuActivity extends PreferenceActivity implements Preference.OnPre
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
-
         bindPreferenceSummaryToValue(findPreference(getString(R.string.preferences_key_sort_by)));
     }
 
