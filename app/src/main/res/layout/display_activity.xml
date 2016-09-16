@@ -44,9 +44,11 @@
                 android:textColor="#ffffff"/>
 
             <ImageView
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_width="match_parent"
                 android:id="@+id/poster"
+                android:src="@drawable/sample_0"
+                android:scaleType="fitCenter"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="4dp" />
 

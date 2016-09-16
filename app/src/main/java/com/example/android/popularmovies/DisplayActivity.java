@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class DisplayActivity extends AppCompatActivity {
     public final static String MOVIE_DETAILS = "movie_details";
-    final String baseurl = "http://image.tmdb.org/t/p/w500";
+    final String baseurl = "http://image.tmdb.org/t/p/w780";
 
     final int MOVIE_POSTER_PATH          = 0;
     final int MOVIE_ADULT                = 1;
