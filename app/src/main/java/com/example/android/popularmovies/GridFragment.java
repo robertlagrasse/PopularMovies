@@ -46,13 +46,19 @@ import java.util.List;
  */
 public class GridFragment extends Fragment {
 
+    // Provides the reference back to MainActivity
     Communicator communicator;
+
+    // Place for the movies to wait for their turn in the gridview
     ArrayList<MovieObject> theHopper;
+
+    // Takes in objects, spits out gridview food.
     ImageAdapter imageAdapter;
 
     @Override
     public void onResume() {
         super.onResume();
+        // Update whenever the fragment resumes.
         updateMovies();
     }
 
@@ -66,8 +72,6 @@ public class GridFragment extends Fragment {
 
         // Build a place for a bunch of movie objects to wait for something to do
         theHopper = new ArrayList<>();
-
-        updateMovies();
 
         // Build a reference to the gridview
         GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
@@ -86,7 +90,7 @@ public class GridFragment extends Fragment {
 
             // When someone clicks, do this:
                 // Build an ArrayList to hold the information passed
-                ArrayList<String> showTime = new ArrayList<String>();
+                ArrayList<String> showTime = new ArrayList<>();
 
                 // Populate the ArrayList with all of the elements in
                 // the movie object referenced in the position.
@@ -193,7 +197,7 @@ public class GridFragment extends Fragment {
                 String sortBy = userPreferences.getString(getString(R.string.preferences_key_sort_by),getString(R.string.preferences_entryValue_sort_by_rating));
 
                 // Use the preferences to make some decisions about the way we search
-                String value_sort_by = "";
+                String value_sort_by;
                 if (sortBy.equals("sort_by_popularity")) {
                     value_sort_by = VALUE_SORT_BY_POPULARITY;
                     } else {
@@ -215,7 +219,7 @@ public class GridFragment extends Fragment {
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
                 if (inputStream == null) {
                     // Nothing to do.
                     return null;
@@ -224,7 +228,7 @@ public class GridFragment extends Fragment {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    buffer.append(line + "\n");
+                    buffer.append(line).append("\n");
                 }
 
                 if (buffer.length() == 0) {
@@ -296,30 +300,38 @@ public class GridFragment extends Fragment {
             ArrayList<MovieObject> movies = new ArrayList<>();
 
             // Iterate through the JSON array
-            for(int i=0;i<movieJSONArray.length();i++){
+            for(int i=0;i<movieJSONArray.length();i++) {
                 // Build an object to look at this JSON
                 JSONObject tempJSON = movieJSONArray.getJSONObject(i);
                 // Build an empty MovieObject
                 MovieObject tempMovie = new MovieObject();
 
-                // Populate the MovieObject with the JSON data
-                tempMovie.setMovie_poster_path(tempJSON.getString(MOVIE_POSTER_PATH));
-                tempMovie.setMovie_adult(tempJSON.getString(MOVIE_ADULT));
-                tempMovie.setMovie_overview(tempJSON.getString(MOVIE_OVERVIEW));
-                tempMovie.setMovie_release_date(tempJSON.getString(MOVIE_RELEASE_DATE));
-                tempMovie.setMovie_genre_ids(tempJSON.getString(MOVIE_GENRE_IDS));
-                tempMovie.setMovie_id(tempJSON.getString(MOVIE_ID));
-                tempMovie.setMovie_original_title(tempJSON.getString(MOVIE_ORIGINAL_TITLE));
-                tempMovie.setMovie_original_language(tempJSON.getString(MOVIE_ORIGINAL_LANGUAGE));
-                tempMovie.setMovie_title(tempJSON.getString(MOVIE_TITLE));
-                tempMovie.setMovie_backdrop_path(tempJSON.getString(MOVIE_BACKDROP_PATH));
-                tempMovie.setMovie_popularity(tempJSON.getString(MOVIE_POPULARITY));
-                tempMovie.setMovie_vote_count(tempJSON.getString(MOVIE_VOTE_COUNT));
-                tempMovie.setMovie_video(tempJSON.getString(MOVIE_VIDEO));
-                tempMovie.setMovie_vote_average(tempJSON.getString(MOVIE_VOTE_AVERAGE));
+                // TMDB occasionally sends results with missing poster paths
+                // Logging these as errors
+                if (tempJSON.getString(MOVIE_POSTER_PATH).contains("null")) {
+                    Log.e(LOG_TAG, tempJSON.getString(MOVIE_TITLE) + " contained null poster path.");
+                    Log.e("Poster Path: ", tempJSON.getString(MOVIE_POSTER_PATH));
+                } else {
+                    // If there is a valid poster path, then
+                    // Populate the MovieObject with the JSON data
+                    tempMovie.setMovie_poster_path(tempJSON.getString(MOVIE_POSTER_PATH));
+                    tempMovie.setMovie_adult(tempJSON.getString(MOVIE_ADULT));
+                    tempMovie.setMovie_overview(tempJSON.getString(MOVIE_OVERVIEW));
+                    tempMovie.setMovie_release_date(tempJSON.getString(MOVIE_RELEASE_DATE));
+                    tempMovie.setMovie_genre_ids(tempJSON.getString(MOVIE_GENRE_IDS));
+                    tempMovie.setMovie_id(tempJSON.getString(MOVIE_ID));
+                    tempMovie.setMovie_original_title(tempJSON.getString(MOVIE_ORIGINAL_TITLE));
+                    tempMovie.setMovie_original_language(tempJSON.getString(MOVIE_ORIGINAL_LANGUAGE));
+                    tempMovie.setMovie_title(tempJSON.getString(MOVIE_TITLE));
+                    tempMovie.setMovie_backdrop_path(tempJSON.getString(MOVIE_BACKDROP_PATH));
+                    tempMovie.setMovie_popularity(tempJSON.getString(MOVIE_POPULARITY));
+                    tempMovie.setMovie_vote_count(tempJSON.getString(MOVIE_VOTE_COUNT));
+                    tempMovie.setMovie_video(tempJSON.getString(MOVIE_VIDEO));
+                    tempMovie.setMovie_vote_average(tempJSON.getString(MOVIE_VOTE_AVERAGE));
 
-                // Add the populated movie to the ArrayList we're going to return
-                movies.add(tempMovie);
+                    // Add the populated movie to the ArrayList we're going to return
+                    movies.add(tempMovie);
+                }
             }
 
             return movies;
@@ -328,9 +340,7 @@ public class GridFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<MovieObject> movies) {
             theHopper.clear();
-
             if(movies!=null){
-
                 for(MovieObject a : movies){
                     theHopper.add(a);
                 }
@@ -340,7 +350,9 @@ public class GridFragment extends Fragment {
     }
 
     private void updateMovies(){
+        // Build a new AsyncTask
         FetchMoviesTask fetch = new FetchMoviesTask();
+        // launch doInBackground, which will return to onPostExecute.
         fetch.execute();
     }
 }

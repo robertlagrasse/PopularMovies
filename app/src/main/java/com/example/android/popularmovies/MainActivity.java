@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements Communicator{
-    public final static String EXTRA_MESSAGE = "com.example.android.popularmovies.MESSAGE";
     public final static String MOVIE_DETAILS = "movie_details";
 
     @Override
@@ -31,9 +30,7 @@ public class MainActivity extends AppCompatActivity implements Communicator{
 
         // Create an instance of GridFragment and drop it on activity_main
         GridFragment gridFragment = new GridFragment();
-        // TMDBQueryManagerFragment tmdbQueryManagerFragment = new TMDBQueryManagerFragment();
         fragmentTransaction.add(R.id.activity_main, gridFragment);
-        // fragmentTransaction.add(tmdbQueryManagerFragment, "tmdb-qmf");
         fragmentTransaction.commit();
     }
 

@@ -2,6 +2,9 @@ package com.example.android.popularmovies;
 
 /**
  * Created by robert on 9/14/16.
+ *
+ * This class is designed to track all of TMDB movie attributes
+ *
  */
 public class MovieObject {
 

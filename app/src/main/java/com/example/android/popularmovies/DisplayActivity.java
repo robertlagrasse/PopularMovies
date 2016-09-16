@@ -13,11 +13,21 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
+/* DisplayActivity exists to display detail information about a specific movie.
+ * It's launched by intent, and the intent includes a ArrayList.
+ *
+ * The ArrayList is picked apart, and the elements are used to populate the
+ * views in the layout.
+ */
 
 public class DisplayActivity extends AppCompatActivity {
+    // The arraylist of extras passed with the intent is called "movie_details"
     public final static String MOVIE_DETAILS = "movie_details";
+
+    // This is the base path for all images.
     final String baseurl = "http://image.tmdb.org/t/p/w780";
 
+    // Human readable positions in the ArrayList
     final int MOVIE_POSTER_PATH          = 0;
     final int MOVIE_ADULT                = 1;
     final int MOVIE_OVERVIEW             = 2;
