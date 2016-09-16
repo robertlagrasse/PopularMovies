@@ -54,6 +54,15 @@ public class DisplayActivity extends AppCompatActivity {
                 .load(baseurl.concat(movie.get(MOVIE_POSTER_PATH)))
                 .into(poster);
 
+        // Grab a reference to the backdrop
+        ImageView backDrop = (ImageView) findViewById(R.id.backdrop);
+
+        // Use Picasso to display the image
+        Picasso.with(this)
+                .load(baseurl.concat(movie.get(MOVIE_BACKDROP_PATH)))
+                .into(backDrop);
+
+
         // Grab a reference to the titleBar
         TextView titleBar = (TextView) findViewById(R.id.title_bar);
         // Set the text
