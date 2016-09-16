@@ -1,0 +1,7 @@
+API Key instructions:
+
+GridFragment.java contains
+
+final String VALUE_API_KEY = "*** YOUR API KEY GOES HERE ***";
+
+Replace, compile, enjoy.

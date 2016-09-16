@@ -190,7 +190,7 @@ public class GridFragment extends Fragment {
                 final String VALUE_SORT_BY_RATING               =   "vote_average.desc";
 
                 final String PARAMETER_API_KEY                  =   "api_key";
-                final String VALUE_API_KEY                      =   "f42ec8a4b30bcaf191a165668a819fda";
+                final String VALUE_API_KEY                      =   "*** YOUR API KEY GOES HERE ***";
 
                 // Grab user preferences
                 SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
