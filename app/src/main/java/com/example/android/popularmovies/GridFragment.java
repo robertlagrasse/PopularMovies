@@ -183,32 +183,37 @@ public class GridFragment extends Fragment {
                 // Constants to identify parameters and corresponding values
                 // for use in the construction of the URL
 
-                final String VALUE_BASE_URL                     =   "https://api.themoviedb.org/3/discover/movie?";
+                final String VALUE_BASE_URL                     =   "https://api.themoviedb.org/3/movie/";
 
                 final String PARAMETER_SORT_BY                  =   "sort_by";
-                final String VALUE_SORT_BY_POPULARITY           =   "popularity.desc";
-                final String VALUE_SORT_BY_RATING               =   "vote_average.desc";
+                final String VALUE_SORT_BY_POPULARITY           =   "popular";
+                final String VALUE_SORT_BY_RATING               =   "top_rated";
 
                 final String PARAMETER_API_KEY                  =   "api_key";
-                final String VALUE_API_KEY                      =   "*** YOUR API KEY GOES HERE ***";
+                final String VALUE_API_KEY                      =   "*** YOUR API KEY ***";
 
                 // Grab user preferences
                 SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
                 String sortBy = userPreferences.getString(getString(R.string.preferences_key_sort_by),getString(R.string.preferences_entryValue_sort_by_rating));
 
                 // Use the preferences to make some decisions about the way we search
-                String value_sort_by;
-                if (sortBy.equals("sort_by_popularity")) {
-                    value_sort_by = VALUE_SORT_BY_POPULARITY;
-                    } else {
-                     value_sort_by = VALUE_SORT_BY_RATING;
+                String webRequest = null;
+
+
+                if (sortBy.equals("sort_by_popularity"))
+                {
+                    webRequest = VALUE_BASE_URL + VALUE_SORT_BY_POPULARITY;
+                    }
+                else {
+                     webRequest = VALUE_BASE_URL + VALUE_SORT_BY_RATING;
                 }
 
+                Log.e(LOG_TAG, webRequest);
                 // Build the URL
-                Uri builtUri = Uri.parse(VALUE_BASE_URL).buildUpon()
-                        .appendQueryParameter(PARAMETER_SORT_BY, value_sort_by)
+                Uri builtUri = Uri.parse(webRequest).buildUpon()
                         .appendQueryParameter(PARAMETER_API_KEY, VALUE_API_KEY)
                         .build();
+                Log.e(LOG_TAG, builtUri.toString());
 
                 URL url = new URL(builtUri.toString());
 
