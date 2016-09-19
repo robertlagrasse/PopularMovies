@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="#40000000"
+            android:background="@color/shady_background"
             tools:context="com.example.android.popularmovies.DisplayActivity">
 
             <TextView
@@ -31,8 +31,8 @@
                 android:id="@+id/title_bar"
                 android:text="@string/title_bar"
                 android:layout_margin="4dp"
-                android:textSize="24sp"
-                android:textColor="#ffffff"/>
+                android:textSize="@dimen/text_size_title"
+                android:textColor="@color/color_text_display_activity"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -40,8 +40,8 @@
                 android:id="@+id/release_date"
                 android:text="@string/release_date"
                 android:layout_margin="4dp"
-                android:textSize="12sp"
-                android:textColor="#ffffff"/>
+                android:textSize="@dimen/text_size_release"
+                android:textColor="@color/color_text_display_activity"/>
 
             <ImageView
                 android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
                 android:isIndicator="true"
                 android:numStars="5"
                 android:id="@+id/rating_bar"
-                android:background="#40000000"
+                android:background="@color/shady_background"
                 android:layout_gravity="center"/>
 
             <TextView
@@ -66,7 +66,8 @@
                 android:id="@+id/summary_text"
                 android:text="@string/summary_text"
                 android:layout_margin="4dp"
-                android:textColor="#FFFFFF"/>
+                android:textSize="@dimen/text_size_description"
+                android:textColor="@color/color_text_display_activity"/>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>
