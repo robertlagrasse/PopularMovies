@@ -95,19 +95,19 @@ public class GridFragment extends Fragment {
                 // Populate the ArrayList with all of the elements in
                 // the movie object referenced in the position.
                 showTime.add(theHopper.get(position).getMovie_poster_path());
-                showTime.add(theHopper.get(position).getMovie_adult());
+                showTime.add(String.valueOf(theHopper.get(position).getMovie_adult()));
                 showTime.add(theHopper.get(position).getMovie_overview());
                 showTime.add(theHopper.get(position).getMovie_release_date());
                 showTime.add(theHopper.get(position).getMovie_genre_ids());
-                showTime.add(theHopper.get(position).getMovie_id());
+                showTime.add(String.valueOf(theHopper.get(position).getMovie_id()));
                 showTime.add(theHopper.get(position).getMovie_original_title());
                 showTime.add(theHopper.get(position).getMovie_original_language());
                 showTime.add(theHopper.get(position).getMovie_title());
                 showTime.add(theHopper.get(position).getMovie_backdrop_path());
-                showTime.add(theHopper.get(position).getMovie_popularity());
-                showTime.add(theHopper.get(position).getMovie_vote_count());
-                showTime.add(theHopper.get(position).getMovie_video());
-                showTime.add(theHopper.get(position).getMovie_vote_average());
+                showTime.add(String.valueOf(theHopper.get(position).getMovie_popularity()));
+                showTime.add(String.valueOf(theHopper.get(position).getMovie_vote_count()));
+                showTime.add(String.valueOf(theHopper.get(position).getMovie_video()));
+                showTime.add(String.valueOf(theHopper.get(position).getMovie_vote_average()));
 
                 // Send the array list back to the Activity that spawned this fragment
                 // The activity must implement Communicator, and must also implement
@@ -190,7 +190,7 @@ public class GridFragment extends Fragment {
                 final String VALUE_SORT_BY_RATING               =   "top_rated";
 
                 final String PARAMETER_API_KEY                  =   "api_key";
-                final String VALUE_API_KEY                      =   "*** YOUR API KEY HERE ***";
+                final String VALUE_API_KEY                      =   "";
 
                 // Grab user preferences
                 SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -320,19 +320,19 @@ public class GridFragment extends Fragment {
                     // If there is a valid poster path, then
                     // Populate the MovieObject with the JSON data
                     tempMovie.setMovie_poster_path(tempJSON.getString(MOVIE_POSTER_PATH));
-                    tempMovie.setMovie_adult(tempJSON.getString(MOVIE_ADULT));
+                    tempMovie.setMovie_adult(tempJSON.getString(MOVIE_ADULT).equals("true"));
                     tempMovie.setMovie_overview(tempJSON.getString(MOVIE_OVERVIEW));
                     tempMovie.setMovie_release_date(tempJSON.getString(MOVIE_RELEASE_DATE));
                     tempMovie.setMovie_genre_ids(tempJSON.getString(MOVIE_GENRE_IDS));
-                    tempMovie.setMovie_id(tempJSON.getString(MOVIE_ID));
+                    tempMovie.setMovie_id(Integer.valueOf(tempJSON.getString(MOVIE_ID)));
                     tempMovie.setMovie_original_title(tempJSON.getString(MOVIE_ORIGINAL_TITLE));
                     tempMovie.setMovie_original_language(tempJSON.getString(MOVIE_ORIGINAL_LANGUAGE));
                     tempMovie.setMovie_title(tempJSON.getString(MOVIE_TITLE));
                     tempMovie.setMovie_backdrop_path(tempJSON.getString(MOVIE_BACKDROP_PATH));
-                    tempMovie.setMovie_popularity(tempJSON.getString(MOVIE_POPULARITY));
-                    tempMovie.setMovie_vote_count(tempJSON.getString(MOVIE_VOTE_COUNT));
-                    tempMovie.setMovie_video(tempJSON.getString(MOVIE_VIDEO));
-                    tempMovie.setMovie_vote_average(tempJSON.getString(MOVIE_VOTE_AVERAGE));
+                    tempMovie.setMovie_popularity(Float.parseFloat(tempJSON.getString(MOVIE_POPULARITY)));
+                    tempMovie.setMovie_vote_count(Long.parseLong(tempJSON.getString(MOVIE_VOTE_COUNT)));
+                    tempMovie.setMovie_video(tempJSON.getString(MOVIE_VIDEO).equals("true"));
+                    tempMovie.setMovie_vote_average(Float.parseFloat(tempJSON.getString(MOVIE_VOTE_AVERAGE)));
 
                     // Add the populated movie to the ArrayList we're going to return
                     movies.add(tempMovie);
