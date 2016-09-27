@@ -5,7 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
+
 import com.example.android.popularmovies.TMDBContract;
+
+import java.net.URI;
+
 /**
  * Created by robert on 9/27/16.
  */
@@ -13,12 +18,10 @@ public class DBManager extends SQLiteOpenHelper {
     // Define some global database stuff
     private static final int        DATABASE_VERSION    = 1;
     private static final String     DATABASE_NAME       = "database";
+    private static final Uri DATABASE_URI        =
+            Uri.parse("content://com.example.android.popularMovies/movies");
 
-    // Define some SQL Data Types
-    private static final String     VARCHAR_255         = " VARCHAR(255), ";
-    private static final String     INTEGER             = " INTEGER, ";
-    private static final String     FLOAT               = " FLOAT, ";
-    private static final String     BOOLEAN             = " BOOLEAN, ";
+
 
     // Cleaned up this constructor. The only thing that got
     // used in the original call was context, so here we are.
@@ -29,29 +32,7 @@ public class DBManager extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // put together a sql string to create the table
-        String query =  "CREATE TABLE "         +
-                TMDBContract.MovieEntry.TABLE_NAME                 + "(" +
-                TMDBContract.MovieEntry.COLUMN_UID                 + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                TMDBContract.MovieEntry.MOVIE_POSTER_PATH          + VARCHAR_255 +
-                TMDBContract.MovieEntry.MOVIE_ADULT                + BOOLEAN +
-                TMDBContract.MovieEntry.MOVIE_OVERVIEW             + VARCHAR_255 +
-                TMDBContract.MovieEntry.MOVIE_RELEASE_DATE         + VARCHAR_255 +
-                TMDBContract.MovieEntry.MOVIE_GENRE_IDS            + VARCHAR_255 +
-                TMDBContract.MovieEntry.MOVIE_ID                   + INTEGER +
-                TMDBContract.MovieEntry.MOVIE_ORIGINAL_TITLE       + VARCHAR_255 +
-                TMDBContract.MovieEntry.MOVIE_ORIGINAL_LANGUAGE    + VARCHAR_255 +
-                TMDBContract.MovieEntry.MOVIE_TITLE                + VARCHAR_255 +
-                TMDBContract.MovieEntry.MOVIE_BACKDROP_PATH        + VARCHAR_255 +
-                TMDBContract.MovieEntry.MOVIE_POPULARITY           + FLOAT +
-                TMDBContract.MovieEntry.MOVIE_VOTE_COUNT           + INTEGER +
-                TMDBContract.MovieEntry.MOVIE_VIDEO                + VARCHAR_255 +
-                TMDBContract.MovieEntry.MOVIE_VOTE_AVERAGE         + FLOAT +
-                TMDBContract.MovieEntry.MOVIE_RESULT_TYPE          + " VARCHAR(255)" +
-                ");";
-
-        // execute the sql command
-        db.execSQL(query);
+        db.execSQL(TMDBContract.MovieEntry.CREATE_TABLE);
     }
 
     @Override

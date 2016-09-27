@@ -10,6 +10,12 @@ import android.text.format.Time;
  */
 public class TMDBContract {
 
+    // Define some SQL Data Types
+    private static final String     VARCHAR_255         = " VARCHAR(255), ";
+    private static final String     INTEGER             = " INTEGER, ";
+    private static final String     FLOAT               = " FLOAT, ";
+    private static final String     BOOLEAN             = " BOOLEAN, ";
+    
     /*
         This class defines the properties of each movie. This is identical to
         the fields as they come down in JSON from TMDB.
@@ -38,7 +44,26 @@ public class TMDBContract {
         public static final String MOVIE_VOTE_AVERAGE         = "vote_average";
         public static final String MOVIE_RESULT_TYPE          = "result_type";
 
-
+        public static final String CREATE_TABLE               =
+                "CREATE TABLE "            +
+                TABLE_NAME                 + "(" +
+                COLUMN_UID                 + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                MOVIE_POSTER_PATH          + VARCHAR_255 +
+                MOVIE_ADULT                + BOOLEAN +
+                MOVIE_OVERVIEW             + VARCHAR_255 +
+                MOVIE_RELEASE_DATE         + VARCHAR_255 +
+                MOVIE_GENRE_IDS            + VARCHAR_255 +
+                MOVIE_ID                   + INTEGER +
+                MOVIE_ORIGINAL_TITLE       + VARCHAR_255 +
+                MOVIE_ORIGINAL_LANGUAGE    + VARCHAR_255 +
+                MOVIE_TITLE                + VARCHAR_255 +
+                MOVIE_BACKDROP_PATH        + VARCHAR_255 +
+                MOVIE_POPULARITY           + FLOAT +
+                MOVIE_VOTE_COUNT           + INTEGER +
+                MOVIE_VIDEO                + VARCHAR_255 +
+                MOVIE_VOTE_AVERAGE         + FLOAT +
+                MOVIE_RESULT_TYPE          + " VARCHAR(255)" +
+                ");";
     }
 
     /* Inner class that defines the contents of the weather table */

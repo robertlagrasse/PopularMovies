@@ -55,10 +55,16 @@ public class GridFragment extends Fragment {
     // Takes in objects, spits out gridview food.
     ImageAdapter imageAdapter;
 
+    public String SORT_BY;
+
+
     @Override
     public void onResume() {
         super.onResume();
         // Update whenever the fragment resumes.
+        SORT_BY = "sort_by_popularity";
+        updateMovies();
+        SORT_BY = "something_else";
         updateMovies();
     }
 
@@ -190,7 +196,7 @@ public class GridFragment extends Fragment {
                 final String VALUE_SORT_BY_RATING               =   "top_rated";
 
                 final String PARAMETER_API_KEY                  =   "api_key";
-                final String VALUE_API_KEY                      =   "";
+                final String VALUE_API_KEY                      =   "f42ec8a4b30bcaf191a165668a819fda";
 
                 // Grab user preferences
                 SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -200,14 +206,14 @@ public class GridFragment extends Fragment {
                 String webRequest = null;
 
 
-                if (sortBy.equals("sort_by_popularity"))
+                if (SORT_BY.toString().equals("sort_by_popularity"))
                 {
                     webRequest = VALUE_BASE_URL + VALUE_SORT_BY_POPULARITY;
                     }
                 else {
                      webRequest = VALUE_BASE_URL + VALUE_SORT_BY_RATING;
                 }
-
+                Log.e(LOG_TAG, SORT_BY);
                 Log.e(LOG_TAG, webRequest);
                 // Build the URL
                 Uri builtUri = Uri.parse(webRequest).buildUpon()
@@ -344,7 +350,7 @@ public class GridFragment extends Fragment {
 
         @Override
         protected void onPostExecute(ArrayList<MovieObject> movies) {
-            theHopper.clear();
+            // theHopper.clear();
             if(movies!=null){
                 for(MovieObject a : movies){
                     theHopper.add(a);
