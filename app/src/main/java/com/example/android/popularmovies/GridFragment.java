@@ -2,27 +2,19 @@ package com.example.android.popularmovies;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Movie;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringDef;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -37,7 +29,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by robert on 9/10/16.
@@ -55,16 +46,15 @@ public class GridFragment extends Fragment {
     // Takes in objects, spits out gridview food.
     ImageAdapter imageAdapter;
 
-    public String SORT_BY;
+    public String SORT_BY = "sort_by_popularity";
 
+    private Boolean THRU_ALREADY = false;
 
     @Override
     public void onResume() {
         super.onResume();
         // Update whenever the fragment resumes.
-        SORT_BY = "sort_by_popularity";
-        updateMovies();
-        SORT_BY = "something_else";
+        THRU_ALREADY = false;
         updateMovies();
     }
 
@@ -205,15 +195,16 @@ public class GridFragment extends Fragment {
                 // Use the preferences to make some decisions about the way we search
                 String webRequest = null;
 
+                Log.e(LOG_TAG, SORT_BY);
 
-                if (SORT_BY.toString().equals("sort_by_popularity"))
+                if (SORT_BY.equals("sort_by_popularity"))
                 {
                     webRequest = VALUE_BASE_URL + VALUE_SORT_BY_POPULARITY;
                     }
                 else {
                      webRequest = VALUE_BASE_URL + VALUE_SORT_BY_RATING;
                 }
-                Log.e(LOG_TAG, SORT_BY);
+
                 Log.e(LOG_TAG, webRequest);
                 // Build the URL
                 Uri builtUri = Uri.parse(webRequest).buildUpon()
@@ -356,6 +347,11 @@ public class GridFragment extends Fragment {
                     theHopper.add(a);
                 }
             imageAdapter.notifyDataSetChanged();
+            }
+            if (!THRU_ALREADY) {
+                THRU_ALREADY = true;
+                SORT_BY = "something_else";
+                updateMovies();
             }
         }
     }
