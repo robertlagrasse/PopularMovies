@@ -46,9 +46,12 @@ public class GridFragment extends Fragment {
     // Takes in objects, spits out gridview food.
     ImageAdapter imageAdapter;
 
-    public String SORT_BY = "sort_by_popularity";
+    public Boolean SORT_BY_POPULARITY = true;
 
     private Boolean THRU_ALREADY = false;
+
+    // Standing up the database instance at a fragement level for now.
+    private DBManager database;
 
     @Override
     public void onResume() {
@@ -195,9 +198,9 @@ public class GridFragment extends Fragment {
                 // Use the preferences to make some decisions about the way we search
                 String webRequest = null;
 
-                Log.e(LOG_TAG, SORT_BY);
+                Log.e(LOG_TAG, SORT_BY_POPULARITY.toString());
 
-                if (SORT_BY.equals("sort_by_popularity"))
+                if (SORT_BY_POPULARITY)
                 {
                     webRequest = VALUE_BASE_URL + VALUE_SORT_BY_POPULARITY;
                     }
@@ -331,6 +334,12 @@ public class GridFragment extends Fragment {
                     tempMovie.setMovie_video(tempJSON.getString(MOVIE_VIDEO).equals("true"));
                     tempMovie.setMovie_vote_average(Float.parseFloat(tempJSON.getString(MOVIE_VOTE_AVERAGE)));
 
+                    // label the movie object with its sort origin. Was this popular or top rated?
+                    if (SORT_BY_POPULARITY){
+                        tempMovie.setMovie_result_type("popular");
+                    }
+                    else tempMovie.setMovie_result_type("top_rated");
+
                     // Add the populated movie to the ArrayList we're going to return
                     movies.add(tempMovie);
                 }
@@ -350,8 +359,15 @@ public class GridFragment extends Fragment {
             }
             if (!THRU_ALREADY) {
                 THRU_ALREADY = true;
-                SORT_BY = "something_else";
+                SORT_BY_POPULARITY = false;
                 updateMovies();
+            } else{
+                Log.e("PostExecute", "database = new DBManager(getActivity());");
+                database = new DBManager(getActivity());
+                Log.e("PostExecute", "database.bulkInsert(theHopper);");
+                database.bulkInsert(theHopper);
+                Log.e("onPostExecute", "Count: " + database.getDBCount());
+                database.close();
             }
         }
     }
