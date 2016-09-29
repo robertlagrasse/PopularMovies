@@ -3,6 +3,10 @@ package com.example.android.popularmovies;
 import android.provider.BaseColumns;
 import android.text.format.Time;
 
+import static android.R.attr.name;
+import static android.icu.text.DateTimePatternGenerator.PatternInfo.CONFLICT;
+import static android.webkit.WebSettings.PluginState.ON;
+
 /**
  * Created by robert on 9/26/16.
  * This class contains database, table, and column constants
@@ -62,11 +66,11 @@ public class TMDBContract {
                 MOVIE_VOTE_COUNT           + INTEGER +
                 MOVIE_VIDEO                + VARCHAR_255 +
                 MOVIE_VOTE_AVERAGE         + FLOAT +
-                MOVIE_RESULT_TYPE          + " VARCHAR(255)" +
-                ");";
+                MOVIE_RESULT_TYPE          + VARCHAR_255 +
+                        "UNIQUE ("+ MOVIE_ID +") ON CONFLICT REPLACE);";
     }
 
-    /* Inner class that defines the contents of the weather table */
+    /* Inner class that defines the contents of the UserMetrics table */
     public static final class UserMetrics implements BaseColumns {
 
         public static final String TABLE_NAME = "user_metrics";

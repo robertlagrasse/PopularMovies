@@ -47,7 +47,7 @@ public class DatabaseAdapter {
     public void bulkInsert(ArrayList<MovieObject> Movies){
         ContentValues values = new ContentValues();
 
-        Log.e("bulkInsert", "Iteration started...");
+        // Log.e("bulkInsert", "Iteration started...");
         // Iterate through the array we received
         for (MovieObject movie : Movies){
             values.put(TMDBContract.MovieEntry.MOVIE_POSTER_PATH, movie.getMovie_poster_path());
@@ -66,7 +66,7 @@ public class DatabaseAdapter {
             values.put(TMDBContract.MovieEntry.MOVIE_VOTE_AVERAGE, movie.getMovie_vote_average());
             values.put(TMDBContract.MovieEntry.MOVIE_RESULT_TYPE, movie.getMovie_result_type());
             long dbkey = database.insert(TMDBContract.MovieEntry.TABLE_NAME, null, values);
-            Log.e("bulkInsert", movie.getMovie_title() + " inserted at: " + dbkey);
+            // Log.e("bulkInsert", movie.getMovie_title() + " inserted at: " + dbkey);
         }
     }
 

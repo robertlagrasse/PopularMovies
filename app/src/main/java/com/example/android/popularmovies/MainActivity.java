@@ -36,22 +36,19 @@ import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
 
 public class MainActivity extends AppCompatActivity implements Communicator {
+    final String VALUE_API_KEY = "Get your own key!";
     public final static String MOVIE_DETAILS = "movie_details";
     public Boolean SORT_BY_POPULARITY = true;
     public Boolean THRU_ALREADY = false;
     DatabaseAdapter database;
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
     private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.e("onCreate()", "Calling updateMovies()");
+        // Log.e("onCreate()", "Calling updateMovies()");
         updateMovies();
 
         // When the application fires up, set the default preferences
@@ -65,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements Communicator {
         GridFragment gridFragment = new GridFragment();
         fragmentTransaction.add(R.id.activity_main, gridFragment);
         fragmentTransaction.commit();
+
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -111,44 +110,7 @@ public class MainActivity extends AppCompatActivity implements Communicator {
         fetch.execute();
     }
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    public Action getIndexApiAction() {
-        Thing object = new Thing.Builder()
-                .setName("Main Page") // TODO: Define a title for the content shown.
-                // TODO: Make sure this auto-generated URL is correct.
-                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
-                .build();
-        return new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
-        client.disconnect();
-    }
-
     private class FetchMoviesTask extends AsyncTask<String, Void, Boolean> {
-
 
         @Override
         protected Boolean doInBackground(String... strings) {
@@ -170,7 +132,6 @@ public class MainActivity extends AppCompatActivity implements Communicator {
             final String VALUE_SORT_BY_RATING = "top_rated";
 
             final String PARAMETER_API_KEY = "api_key";
-            final String VALUE_API_KEY = "";
             String webRequest = null;
 
             if (SORT_BY_POPULARITY) {
@@ -183,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements Communicator {
             Uri builtUri = Uri.parse(webRequest).buildUpon()
                     .appendQueryParameter(PARAMETER_API_KEY, VALUE_API_KEY)
                     .build();
-            Log.e("doInBackground()", builtUri.toString());
+            // Log.e("doInBackground()", builtUri.toString());
 
 
             try {
@@ -323,20 +284,18 @@ public class MainActivity extends AppCompatActivity implements Communicator {
 
         @Override
         protected void onPostExecute(Boolean dibResult) {
-            // This will just be the search loop and a notifier.
-            if (dibResult){
-                Log.e("onPostExecute", "Boolean True");
-            } else
-            {
-                Log.e("onPostExecute", "Boolean False");
-            }
-            if (!THRU_ALREADY) {
-                THRU_ALREADY = true;
-                SORT_BY_POPULARITY = false;
-                Log.e("onPostExecute", "First Time Through");
-                updateMovies();
+
+            if (dibResult) {
+                if (!THRU_ALREADY) {
+                    THRU_ALREADY = true;
+                    SORT_BY_POPULARITY = false;
+                    // Log.e("onPostExecute", "First Time Through");
+                    updateMovies();
+                } else {
+                    // Log.e("onPostExecute", "Second Time Through");
+                }
             } else {
-                Log.e("onPostExecute", "Second Time Through");
+                Log.e("onPostExecute():","doInBackground did not return true");
             }
         }
     }
@@ -349,6 +308,41 @@ public class MainActivity extends AppCompatActivity implements Communicator {
     private void closeDB() {
         database.close();
     }
+
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
+    }
+
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Main Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
 }
 
 
