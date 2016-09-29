@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements Communicator {
             final String VALUE_SORT_BY_RATING = "top_rated";
 
             final String PARAMETER_API_KEY = "api_key";
-            final String VALUE_API_KEY = "f42ec8a4b30bcaf191a165668a819fda";
+            final String VALUE_API_KEY = "";
             String webRequest = null;
 
             if (SORT_BY_POPULARITY) {
@@ -271,6 +271,9 @@ public class MainActivity extends AppCompatActivity implements Communicator {
             // Split the JSON object up into an array, Keyed on "results"
             JSONArray movieJSONArray = blobOfJSON.getJSONArray(MOVIE_RESULTS);
 
+            // ArrayList to hold all of the extracted movies
+            ArrayList<MovieObject> movies = new ArrayList<>();
+
             // TODO: Tighten this up. Reuse same objects?
             // Iterate through the JSON array
             for (int i = 0; i < movieJSONArray.length(); i++) {
@@ -308,13 +311,14 @@ public class MainActivity extends AppCompatActivity implements Communicator {
 
                     // Add the populated movie to the ArrayList we're going to return
                     // This get's replaced by a call to the db.
-                    //movies.add(tempMovie);
-                    openDB();
-                    long dbkey = database.itemInsert(tempMovie);
-                    closeDB();
-                    Log.e("DBInsert", tempMovie.getMovie_title() + " inserted at: " + dbkey);
+                    movies.add(tempMovie);
+
                 }
             }
+            openDB();
+            database.bulkInsert(movies);
+            closeDB();
+
         }
 
         @Override

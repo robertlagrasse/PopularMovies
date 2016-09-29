@@ -65,7 +65,8 @@ public class DatabaseAdapter {
             values.put(TMDBContract.MovieEntry.MOVIE_VIDEO, movie.getMovie_video());
             values.put(TMDBContract.MovieEntry.MOVIE_VOTE_AVERAGE, movie.getMovie_vote_average());
             values.put(TMDBContract.MovieEntry.MOVIE_RESULT_TYPE, movie.getMovie_result_type());
-            database.insert(TMDBContract.MovieEntry.TABLE_NAME, null, values);
+            long dbkey = database.insert(TMDBContract.MovieEntry.TABLE_NAME, null, values);
+            Log.e("bulkInsert", movie.getMovie_title() + " inserted at: " + dbkey);
         }
     }
 
@@ -88,6 +89,20 @@ public class DatabaseAdapter {
         values.put(TMDBContract.MovieEntry.MOVIE_VOTE_AVERAGE, movie.getMovie_vote_average());
         values.put(TMDBContract.MovieEntry.MOVIE_RESULT_TYPE, movie.getMovie_result_type());
         return database.insert(TMDBContract.MovieEntry.TABLE_NAME, null, values);
+    }
+
+    public int getDBCount(){
+        String dbString = "";
+
+        // Build a sql query
+        String query = "SELECT COUNT(*) FROM " + TMDBContract.MovieEntry.TABLE_NAME + " WHERE 1";
+
+        // Point the cursor at the result of the executed query
+        Cursor c= database.rawQuery(query, null);
+        c.moveToFirst();
+        int count = c.getInt(0);
+        c.close();
+        return count;
     }
 
     // Inner class
