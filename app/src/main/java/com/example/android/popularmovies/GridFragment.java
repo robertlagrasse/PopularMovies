@@ -51,14 +51,16 @@ public class GridFragment extends Fragment {
     private Boolean THRU_ALREADY = false;
 
     // Standing up the database instance at a fragement level for now.
-    private DBManager database;
+    // TODO : replace with Database Adapter
+    //private DBManager database;
 
     @Override
     public void onResume() {
         super.onResume();
         // Update whenever the fragment resumes.
         THRU_ALREADY = false;
-        updateMovies();
+        // Move this responsibility to MainActivity.
+        //updateMovies();
     }
 
     @Override
@@ -137,7 +139,7 @@ public class GridFragment extends Fragment {
         }
 
         public long getItemId(int position) {
-            return 0;
+            return position;
         }
 
         // create a new ImageView for each item referenced by the Adapter
@@ -362,12 +364,13 @@ public class GridFragment extends Fragment {
                 SORT_BY_POPULARITY = false;
                 updateMovies();
             } else{
-                Log.e("PostExecute", "database = new DBManager(getActivity());");
-                database = new DBManager(getActivity());
-                Log.e("PostExecute", "database.bulkInsert(theHopper);");
-                database.bulkInsert(theHopper);
-                Log.e("onPostExecute", "Count: " + database.getDBCount());
-                database.close();
+                // This needs to be updated to use Adapter.
+//                Log.e("PostExecute", "database = new DBManager(getActivity());");
+//                database = new DBManager(getActivity());
+//                Log.e("PostExecute", "database.bulkInsert(theHopper);");
+//                database.bulkInsert(theHopper);
+//                Log.e("onPostExecute", "Count: " + database.getDBCount());
+//                database.close();
             }
         }
     }
