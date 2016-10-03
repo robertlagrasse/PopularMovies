@@ -46,8 +46,6 @@ public class GridFragment extends Fragment {
     // Takes in objects, spits out gridview food.
     ImageAdapter imageAdapter;
 
-    private DatabaseAdapter database;
-
     @Override
     public void onResume() {
         super.onResume();
@@ -114,14 +112,6 @@ public class GridFragment extends Fragment {
         return rootView;
     }
 
-    private void openDB() {
-        database = new DatabaseAdapter(getActivity());
-        database.open();
-    }
-
-    private void closeDB() {
-        database.close();
-    }
 
     // adapted from https://developer.android.com/guide/topics/ui/layout/gridview.html
     public class ImageAdapter extends ArrayAdapter<MovieObject> {
