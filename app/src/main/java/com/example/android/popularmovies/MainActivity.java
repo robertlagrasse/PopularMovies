@@ -3,6 +3,8 @@ package com.example.android.popularmovies;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -36,7 +38,7 @@ import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
 
 public class MainActivity extends AppCompatActivity implements Communicator {
-    final String VALUE_API_KEY = "Get your own key!";
+    final String VALUE_API_KEY = "";
     public final static String MOVIE_DETAILS = "movie_details";
     public Boolean SORT_BY_POPULARITY = true;
     public Boolean THRU_ALREADY = false;
@@ -242,12 +244,18 @@ public class MainActivity extends AppCompatActivity implements Communicator {
                 JSONObject tempJSON = movieJSONArray.getJSONObject(i);
                 // Build an empty MovieObject
                 MovieObject tempMovie = new MovieObject();
-
+                ContentValues values = new ContentValues();
                 // TMDB occasionally sends results with missing poster paths
                 // Logging these as errors
                 if (tempJSON.getString(MOVIE_POSTER_PATH).contains("null")) {
                     Log.e("NULL Poster Path: ", tempJSON.getString(MOVIE_POSTER_PATH));
                 } else {
+                    /*
+
+                    This was fine when we were passing an arraylist of movie objects
+                    to a bulkinsert method in our database manager, but we need to send
+                    ContentValues to the Content Provider, so the assigment needs to change.
+
                     // If there is a valid poster path, then
                     // Populate the MovieObject with the JSON data
                     tempMovie.setMovie_poster_path(tempJSON.getString(MOVIE_POSTER_PATH));
@@ -265,20 +273,49 @@ public class MainActivity extends AppCompatActivity implements Communicator {
                     tempMovie.setMovie_video(tempJSON.getString(MOVIE_VIDEO).equals("true"));
                     tempMovie.setMovie_vote_average(Float.parseFloat(tempJSON.getString(MOVIE_VOTE_AVERAGE)));
 
-                    // label the movie object with its sort origin. Was this popular or top rated?
+                    // Movie object is built, need to insert it via Content Provider here
+                    // Still need to understand that part, so this is just a placeholder for now
+
+                    */
+
+                    values.put(TMDBContract.MovieEntry.MOVIE_POSTER_PATH,       tempJSON.getString(MOVIE_POSTER_PATH));
+                    values.put(TMDBContract.MovieEntry.MOVIE_ADULT,             tempJSON.getString(MOVIE_ADULT).equals("true"));
+                    values.put(TMDBContract.MovieEntry.MOVIE_OVERVIEW,          tempJSON.getString(MOVIE_OVERVIEW));
+                    values.put(TMDBContract.MovieEntry.MOVIE_RELEASE_DATE,      tempJSON.getString(MOVIE_RELEASE_DATE));
+                    values.put(TMDBContract.MovieEntry.MOVIE_GENRE_IDS,         tempJSON.getString(MOVIE_GENRE_IDS));
+                    values.put(TMDBContract.MovieEntry.MOVIE_ID,                Integer.valueOf(tempJSON.getString(MOVIE_ID)));
+                    values.put(TMDBContract.MovieEntry.MOVIE_ORIGINAL_TITLE,    tempJSON.getString(MOVIE_ORIGINAL_TITLE));
+                    values.put(TMDBContract.MovieEntry.MOVIE_ORIGINAL_LANGUAGE, tempJSON.getString(MOVIE_ORIGINAL_LANGUAGE));
+                    values.put(TMDBContract.MovieEntry.MOVIE_TITLE,             tempJSON.getString(MOVIE_TITLE));
+                    values.put(TMDBContract.MovieEntry.MOVIE_BACKDROP_PATH,     tempJSON.getString(MOVIE_BACKDROP_PATH));
+                    values.put(TMDBContract.MovieEntry.MOVIE_POPULARITY,        Float.parseFloat(tempJSON.getString(MOVIE_POPULARITY)));
+                    values.put(TMDBContract.MovieEntry.MOVIE_VOTE_COUNT,        Long.parseLong(tempJSON.getString(MOVIE_VOTE_COUNT)));
+                    values.put(TMDBContract.MovieEntry.MOVIE_VIDEO,             tempJSON.getString(MOVIE_VIDEO).equals("true"));
+                    values.put(TMDBContract.MovieEntry.MOVIE_VOTE_AVERAGE,      Float.parseFloat(tempJSON.getString(MOVIE_VOTE_AVERAGE)));
+
+                    Log.e("MainActivity", "Content values in place, calling contentprovider insert");
+                    Uri insertedUri = getContentResolver().insert(
+                            TMDBContract.MovieEntry.CONTENT_URI,
+                            values
+                    );
+
+                    values.clear();
                     if (SORT_BY_POPULARITY) {
-                        tempMovie.setMovie_result_type("popular");
-                    } else tempMovie.setMovie_result_type("top_rated");
+                        values.put(TMDBContract.MovieEntry.MOVIE_MOST_POPULAR, true);
+                        // Call the db update here
+                    } else {
+                        values.put(TMDBContract.MovieEntry.MOVIE_TOP_RATED, true);
+                        // Call the db update here;
+                    }
 
-                    // Add the populated movie to the ArrayList we're going to return
-                    // This get's replaced by a call to the db.
-                    movies.add(tempMovie);
-
+                    // movies.add(tempMovie);
                 }
             }
-            openDB();
+
+            // This will all go away as the CP will handle DB access.
+            /* openDB();
             database.bulkInsert(movies);
-            closeDB();
+            closeDB();*/
 
         }
 

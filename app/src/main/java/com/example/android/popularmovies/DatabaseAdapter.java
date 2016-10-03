@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.util.Log;
 
@@ -64,7 +65,7 @@ public class DatabaseAdapter {
             values.put(TMDBContract.MovieEntry.MOVIE_VOTE_COUNT, movie.getMovie_vote_count());
             values.put(TMDBContract.MovieEntry.MOVIE_VIDEO, movie.getMovie_video());
             values.put(TMDBContract.MovieEntry.MOVIE_VOTE_AVERAGE, movie.getMovie_vote_average());
-            values.put(TMDBContract.MovieEntry.MOVIE_RESULT_TYPE, movie.getMovie_result_type());
+            // values.put(TMDBContract.MovieEntry.MOVIE_RESULT_TYPE, movie.getMovie_result_type());
             long dbkey = database.insert(TMDBContract.MovieEntry.TABLE_NAME, null, values);
             // Log.e("bulkInsert", movie.getMovie_title() + " inserted at: " + dbkey);
         }
@@ -87,7 +88,7 @@ public class DatabaseAdapter {
         values.put(TMDBContract.MovieEntry.MOVIE_VOTE_COUNT, movie.getMovie_vote_count());
         values.put(TMDBContract.MovieEntry.MOVIE_VIDEO, movie.getMovie_video());
         values.put(TMDBContract.MovieEntry.MOVIE_VOTE_AVERAGE, movie.getMovie_vote_average());
-        values.put(TMDBContract.MovieEntry.MOVIE_RESULT_TYPE, movie.getMovie_result_type());
+        // values.put(TMDBContract.MovieEntry.MOVIE_RESULT_TYPE, movie.getMovie_result_type());
         return database.insert(TMDBContract.MovieEntry.TABLE_NAME, null, values);
     }
 
@@ -105,23 +106,46 @@ public class DatabaseAdapter {
         return count;
     }
 
+    public Cursor getAllRows() {
+        String where = null;
+        Cursor c = 	database.query(true, TMDBContract.MovieEntry.TABLE_NAME, TMDBContract.MovieEntry.MOVIE_ALL_KEYS,
+                where, null, null, null, null, null);
+        if (c != null) {
+            c.moveToFirst();
+        }
+        return c;
+    }
+
+    public Cursor getData(String id, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        SQLiteQueryBuilder sqliteQueryBuilder = new SQLiteQueryBuilder();
+        sqliteQueryBuilder.setTables(TMDBContract.MovieEntry.TABLE_NAME);
+
+        if(id != null) {
+            sqliteQueryBuilder.appendWhere(TMDBContract.MovieEntry.MOVIE_ID + " = " + id);
+        }
+
+        if(sortOrder == null || sortOrder == "") {
+            sortOrder = TMDBContract.MovieEntry.MOVIE_ID;
+        }
+        Cursor cursor = sqliteQueryBuilder.query(database,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder);
+        return cursor;
+    }
+
     // Inner class
     private class DBManager extends SQLiteOpenHelper {
         // Define some global database stuff
-
-        /*
-        *
-        * Consider moving these to the DB contract and referencing them.
-        *
-        * */
         private static final int DATABASE_VERSION = 1;
         private static final String DATABASE_NAME = "database";
         private final Uri DATABASE_URI =
                 Uri.parse("content://com.example.android.popularMovies/movies");
 
 
-        // Cleaned up this constructor. The only thing that got
-        // used in the original call was context, so here we are.
         DBManager(Context context) {
             //super(context, name, factory, version); // original super.
             super(context, DATABASE_NAME, null, DATABASE_VERSION);

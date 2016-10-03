@@ -51,9 +51,10 @@ public class GridFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        openDB();
-        Log.e("onResume", "Database Count: " + database.getDBCount());
-        closeDB();
+
+//        openDB();
+//        Log.e("onResume", "Database Count: " + database.getDBCount());
+//        closeDB();
     }
 
     @Override
