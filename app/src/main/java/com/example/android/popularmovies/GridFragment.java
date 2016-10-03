@@ -1,9 +1,11 @@
 package com.example.android.popularmovies;
 
 import android.app.Fragment;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -55,6 +57,10 @@ public class GridFragment extends Fragment {
         super.onResume();
         mContext = getActivity();
         Cursor cursor;
+
+        /*
+         * This pulls an individual record
+         *
         cursor = mContext.getContentResolver().query(
                 TMDBContract.MovieEntry.buildMovieURI(389),
                 TMDBContract.MovieEntry.MOVIE_ALL_KEYS,
@@ -84,6 +90,28 @@ public class GridFragment extends Fragment {
             Log.e("GridGragment", "Cursor returned no rows");
         }
         cursor.close();
+        */
+
+        cursor = mContext.getContentResolver().query(
+                TMDBContract.MovieEntry.buildTopRatedURI(),
+                new String[]{TMDBContract.MovieEntry.MOVIE_TITLE, TMDBContract.MovieEntry.MOVIE_ID},
+                null,
+                null,
+                null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                ContentValues cv = new ContentValues();
+                DatabaseUtils.cursorRowToContentValues(cursor, cv);
+                Log.e("GridFragment", cv.getAsString(TMDBContract.MovieEntry.MOVIE_TITLE));
+                Log.e("GridFragment", cv.getAsString(TMDBContract.MovieEntry.MOVIE_ID));
+            } while (cursor.moveToNext());
+
+        } else {
+            Log.e("GridGragment", "Cursor returned no rows");
+        }
+        cursor.close();
+
     }
 
     @Override

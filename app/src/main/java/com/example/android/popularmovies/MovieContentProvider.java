@@ -110,12 +110,12 @@ public class MovieContentProvider extends ContentProvider {
                 Log.e("MovieContentProvider", "projection: " + projection);
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
-                        new String[]{TMDBContract.MovieEntry.MOVIE_POSTER_PATH},    // poster path
-                        null,                                                       // no filter
-                        null,                                                       // no args
+                        projection,    // poster path
+                        selection,
+                        selectionArgs,
                         null,
                         null,
-                        null                                                        // no sorting
+                        sortOrder
                 );
                 break;
             }
@@ -142,6 +142,7 @@ public class MovieContentProvider extends ContentProvider {
             case FAVORITES: {
                 Log.e("MovieContentProvider", "uri " + uri + " Matched FAVORITES");
 
+                // alter selection logic to only return favorites. Ignore all other user input
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
                         projection,
@@ -156,6 +157,7 @@ public class MovieContentProvider extends ContentProvider {
             case POPULAR: {
                 Log.e("MovieContentProvider", "uri " + uri + " Matched POPULAR");
 
+                // alter selection logic to only return popular. Ignore all other user input
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
                         projection,
@@ -170,6 +172,7 @@ public class MovieContentProvider extends ContentProvider {
             case TOP_RATED: {
                 Log.e("MovieContentProvider", "uri " + uri + " Matched TOP_RATED");
 
+                // alter selection logic to only return top_rated. Ignore all other user input
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
                         projection,

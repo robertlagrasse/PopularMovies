@@ -9,6 +9,7 @@ import android.text.format.Time;
 
 import java.net.URI;
 
+import static android.R.attr.id;
 import static android.R.attr.name;
 import static android.icu.text.DateTimePatternGenerator.PatternInfo.CONFLICT;
 import static android.webkit.WebSettings.PluginState.ON;
@@ -53,6 +54,17 @@ public class TMDBContract {
         public static Uri buildMovieURI(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
+
+        public static Uri buildPopularURI() {
+            return CONTENT_URI.buildUpon().appendPath("popular").build();
+        }
+        public static Uri buildTopRatedURI() {
+            return CONTENT_URI.buildUpon().appendPath("top_rated").build();
+        }
+        public static Uri buildFavoritesURI() {
+            return CONTENT_URI.buildUpon().appendPath("favorites").build();
+        }
+
         /*
         This class defines the properties of each movie. This is identical to
         the fields as they come down in JSON from TMDB.
