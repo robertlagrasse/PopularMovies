@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import static android.Manifest.permission_group.LOCATION;
+import static android.R.attr.value;
 import static com.google.android.gms.security.ProviderInstaller.PROVIDER_NAME;
 
 /**
@@ -106,6 +107,7 @@ public class MovieContentProvider extends ContentProvider {
             // database modifications.
 
             case ALL_MOVIES: {
+                Log.e("MovieContentProvider", "projection: " + projection);
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
                         new String[]{TMDBContract.MovieEntry.MOVIE_POSTER_PATH},    // poster path
@@ -124,17 +126,13 @@ public class MovieContentProvider extends ContentProvider {
             // for now, I just want it off the ground.
 
             case ONE_MOVIE: {
+                Log.e("MovieContentProvider", "uri " + uri + " Matched ONE_MOVIE");
                 String movie_id = uri.getPathSegments().get(1);
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
-                        new String[]{TMDBContract.MovieEntry.MOVIE_TITLE,
-                                TMDBContract.MovieEntry.MOVIE_RELEASE_DATE,
-                                TMDBContract.MovieEntry.MOVIE_POSTER_PATH,
-                                TMDBContract.MovieEntry.MOVIE_BACKDROP_PATH,
-                                TMDBContract.MovieEntry.MOVIE_VOTE_AVERAGE,
-                                TMDBContract.MovieEntry.MOVIE_OVERVIEW},
-                        TMDBContract.MovieEntry.MOVIE_ID + " = ?",
-                        new String[]{movie_id},
+                        projection,
+                        selection,
+                        selectionArgs,
                         null,
                         null,
                         null
@@ -142,6 +140,8 @@ public class MovieContentProvider extends ContentProvider {
                 break;
             }
             case FAVORITES: {
+                Log.e("MovieContentProvider", "uri " + uri + " Matched FAVORITES");
+
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
                         projection,
@@ -154,6 +154,8 @@ public class MovieContentProvider extends ContentProvider {
                 break;
             }
             case POPULAR: {
+                Log.e("MovieContentProvider", "uri " + uri + " Matched POPULAR");
+
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
                         projection,
@@ -166,6 +168,8 @@ public class MovieContentProvider extends ContentProvider {
                 break;
             }
             case TOP_RATED: {
+                Log.e("MovieContentProvider", "uri " + uri + " Matched TOP_RATED");
+
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
                         projection,
@@ -214,14 +218,15 @@ public class MovieContentProvider extends ContentProvider {
         final SQLiteDatabase db = databaseManager.getWritableDatabase();
         final int match = uriMatcher.match(uri);
         Uri returnUri;
-
+        returnUri = uri;
         switch (match) {
             case ALL_MOVIES: {
                 // Log.e("CP_insert", contentValues.getAsString(TMDBContract.MovieEntry.MOVIE_TITLE));
                 long _id = db.insert(TMDBContract.MovieEntry.TABLE_NAME, null, contentValues);
-                if (_id < 0)
-                Log.e("CP_insert", "Did not insert :" + contentValues.getAsString(TMDBContract.MovieEntry.MOVIE_TITLE));
-                    returnUri = uri; // TODO: Work out real URI to return
+                if (_id < 0) {
+                    // Log.e("CP_insert", "Did not insert :" + contentValues.getAsString(TMDBContract.MovieEntry.MOVIE_TITLE));
+                    returnUri = Uri.withAppendedPath(uri, String.valueOf(_id));
+                }
                 break;
             }
             // More cases will follow, but for other tables.
@@ -264,15 +269,15 @@ public class MovieContentProvider extends ContentProvider {
 
         switch (match) {
             case ONE_MOVIE:
-                rowsUpdated = db.update(TMDBContract.MovieEntry.TABLE_NAME, values, selection,
-                        selectionArgs);
+                String movie = uri.getPathSegments().get(1);
+                rowsUpdated = db.update(TMDBContract.MovieEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        if (rowsUpdated != 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
-        }
+//        if (rowsUpdated != 0) {
+//            getContext().getContentResolver().notifyChange(uri, null);
+//        }
         return rowsUpdated;
     }
 

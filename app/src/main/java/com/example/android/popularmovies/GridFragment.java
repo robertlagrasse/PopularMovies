@@ -3,6 +3,7 @@ package com.example.android.popularmovies;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -46,13 +47,43 @@ public class GridFragment extends Fragment {
     // Takes in objects, spits out gridview food.
     ImageAdapter imageAdapter;
 
+    Context mContext;
+/*public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+                        String sortOrder)*/
     @Override
     public void onResume() {
         super.onResume();
+        mContext = getActivity();
+        Cursor cursor;
+        cursor = mContext.getContentResolver().query(
+                TMDBContract.MovieEntry.buildMovieURI(389),
+                TMDBContract.MovieEntry.MOVIE_ALL_KEYS,
+                null,
+                null,
+                null);
 
-//        openDB();
-//        Log.e("onResume", "Database Count: " + database.getDBCount());
-//        closeDB();
+        if (cursor.moveToFirst()) {
+            Log.e("GridFragment", "COLUMN_UID: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.COLUMN_UID)));
+            Log.e("GridFragment", "MOVIE_POSTER_PATH: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_POSTER_PATH)));
+            Log.e("GridFragment", "MOVIE_OVERVIEW: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_OVERVIEW)));
+            Log.e("GridFragment", "MOVIE_RELEASE_DATE: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_RELEASE_DATE)));
+            Log.e("GridFragment", "MOVIE_GENRE_IDS: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_GENRE_IDS)));
+            Log.e("GridFragment", "MOVIE_ORIGINAL_TITLE: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_ORIGINAL_TITLE)));
+            Log.e("GridFragment", "MOVIE_ORIGINAL_LANGUAGE: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_ORIGINAL_LANGUAGE)));
+            Log.e("GridFragment", "MOVIE_TITLE: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_TITLE)));
+            Log.e("GridFragment", "MOVIE_BACKDROP_PATH: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_BACKDROP_PATH)));
+            Log.e("GridFragment", "MOVIE_POPULARITY: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_POPULARITY)));
+            Log.e("GridFragment", "MOVIE_VOTE_COUNT: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_VOTE_COUNT)));
+            Log.e("GridFragment", "MOVIE_VIDEO: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_VIDEO)));
+            Log.e("GridFragment", "MOVIE_VOTE_AVERAGE: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_VOTE_AVERAGE)));
+            Log.e("GridFragment", "MOVIE_TOP_RATED: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_TOP_RATED)));
+            Log.e("GridFragment", "MOVIE_MOST_POPULAR: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_MOST_POPULAR)));
+            Log.e("GridFragment", "MOVIE_USER_FAVORITE: " + cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_USER_FAVORITE)));
+
+        } else {
+            Log.e("GridGragment", "Cursor returned no rows");
+        }
+        cursor.close();
     }
 
     @Override

@@ -25,7 +25,7 @@ public class TMDBContract {
     private static final String     VARCHAR_255         = " VARCHAR(255), ";
     private static final String     INTEGER             = " INTEGER, ";
     private static final String     FLOAT               = " FLOAT, ";
-    private static final String     BOOLEAN             = " BOOLEAN, ";
+    // private static final String     BOOLEAN             = " BOOLEAN, ";
 
     // This defines the content authority
     public static final String CONTENT_AUTHORITY    = "com.example.android.popularmovies";
@@ -50,7 +50,7 @@ public class TMDBContract {
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + MOVIE_PATH;
 
-        public static Uri buildLocationUri(long id) {
+        public static Uri buildMovieURI(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
         /*
@@ -83,7 +83,8 @@ public class TMDBContract {
         public static final String MOVIE_USER_FAVORITE        = "user_favorite";
 
 
-        public static final String[] MOVIE_ALL_KEYS = new String[] {COLUMN_UID,
+        public static final String[] MOVIE_ALL_KEYS = new String[] {
+                COLUMN_UID,
                 MOVIE_POSTER_PATH,
                 MOVIE_ADULT,
                 MOVIE_OVERVIEW,
@@ -107,7 +108,7 @@ public class TMDBContract {
                         TABLE_NAME                 + "(" +
                         COLUMN_UID                 + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         MOVIE_POSTER_PATH          + VARCHAR_255 +
-                        MOVIE_ADULT                + BOOLEAN +
+                        MOVIE_ADULT                + VARCHAR_255 +
                         MOVIE_OVERVIEW             + VARCHAR_255 +
                         MOVIE_RELEASE_DATE         + VARCHAR_255 +
                         MOVIE_GENRE_IDS            + VARCHAR_255 +
@@ -120,9 +121,9 @@ public class TMDBContract {
                         MOVIE_VOTE_COUNT           + INTEGER +
                         MOVIE_VIDEO                + VARCHAR_255 +
                         MOVIE_VOTE_AVERAGE         + FLOAT +
-                        MOVIE_TOP_RATED            + BOOLEAN +
-                        MOVIE_MOST_POPULAR         + BOOLEAN +
-                        MOVIE_USER_FAVORITE        + BOOLEAN +
+                        MOVIE_TOP_RATED            + VARCHAR_255 +
+                        MOVIE_MOST_POPULAR         + VARCHAR_255 +
+                        MOVIE_USER_FAVORITE        + VARCHAR_255 +
                         "UNIQUE ("+ MOVIE_ID +") ON CONFLICT IGNORE);";
     }
 

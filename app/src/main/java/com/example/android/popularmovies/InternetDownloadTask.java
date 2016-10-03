@@ -2,6 +2,7 @@ package com.example.android.popularmovies;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -181,36 +182,9 @@ public class InternetDownloadTask {
                 if (tempJSON.getString(MOVIE_POSTER_PATH).contains("null")) {
                     Log.e("NULL Poster Path: ", tempJSON.getString(MOVIE_POSTER_PATH));
                 } else {
-                    /*
-
-                    This was fine when we were passing an arraylist of movie objects
-                    to a bulkinsert method in our database manager, but we need to send
-                    ContentValues to the Content Provider, so the assigment needs to change.
-
-                    // If there is a valid poster path, then
-                    // Populate the MovieObject with the JSON data
-                    tempMovie.setMovie_poster_path(tempJSON.getString(MOVIE_POSTER_PATH));
-                    tempMovie.setMovie_adult(tempJSON.getString(MOVIE_ADULT).equals("true"));
-                    tempMovie.setMovie_overview(tempJSON.getString(MOVIE_OVERVIEW));
-                    tempMovie.setMovie_release_date(tempJSON.getString(MOVIE_RELEASE_DATE));
-                    tempMovie.setMovie_genre_ids(tempJSON.getString(MOVIE_GENRE_IDS));
-                    tempMovie.setMovie_id(Integer.valueOf(tempJSON.getString(MOVIE_ID)));
-                    tempMovie.setMovie_original_title(tempJSON.getString(MOVIE_ORIGINAL_TITLE));
-                    tempMovie.setMovie_original_language(tempJSON.getString(MOVIE_ORIGINAL_LANGUAGE));
-                    tempMovie.setMovie_title(tempJSON.getString(MOVIE_TITLE));
-                    tempMovie.setMovie_backdrop_path(tempJSON.getString(MOVIE_BACKDROP_PATH));
-                    tempMovie.setMovie_popularity(Float.parseFloat(tempJSON.getString(MOVIE_POPULARITY)));
-                    tempMovie.setMovie_vote_count(Long.parseLong(tempJSON.getString(MOVIE_VOTE_COUNT)));
-                    tempMovie.setMovie_video(tempJSON.getString(MOVIE_VIDEO).equals("true"));
-                    tempMovie.setMovie_vote_average(Float.parseFloat(tempJSON.getString(MOVIE_VOTE_AVERAGE)));
-
-                    // Movie object is built, need to insert it via Content Provider here
-                    // Still need to understand that part, so this is just a placeholder for now
-
-                    */
 
                     values.put(TMDBContract.MovieEntry.MOVIE_POSTER_PATH,       tempJSON.getString(MOVIE_POSTER_PATH));
-                    values.put(TMDBContract.MovieEntry.MOVIE_ADULT,             tempJSON.getString(MOVIE_ADULT).equals("true"));
+                    values.put(TMDBContract.MovieEntry.MOVIE_ADULT,             tempJSON.getString(MOVIE_ADULT));
                     values.put(TMDBContract.MovieEntry.MOVIE_OVERVIEW,          tempJSON.getString(MOVIE_OVERVIEW));
                     values.put(TMDBContract.MovieEntry.MOVIE_RELEASE_DATE,      tempJSON.getString(MOVIE_RELEASE_DATE));
                     values.put(TMDBContract.MovieEntry.MOVIE_GENRE_IDS,         tempJSON.getString(MOVIE_GENRE_IDS));
@@ -221,26 +195,42 @@ public class InternetDownloadTask {
                     values.put(TMDBContract.MovieEntry.MOVIE_BACKDROP_PATH,     tempJSON.getString(MOVIE_BACKDROP_PATH));
                     values.put(TMDBContract.MovieEntry.MOVIE_POPULARITY,        Float.parseFloat(tempJSON.getString(MOVIE_POPULARITY)));
                     values.put(TMDBContract.MovieEntry.MOVIE_VOTE_COUNT,        Long.parseLong(tempJSON.getString(MOVIE_VOTE_COUNT)));
-                    values.put(TMDBContract.MovieEntry.MOVIE_VIDEO,             tempJSON.getString(MOVIE_VIDEO).equals("true"));
+                    values.put(TMDBContract.MovieEntry.MOVIE_VIDEO,             tempJSON.getString(MOVIE_VIDEO));
                     values.put(TMDBContract.MovieEntry.MOVIE_VOTE_AVERAGE,      Float.parseFloat(tempJSON.getString(MOVIE_VOTE_AVERAGE)));
-
-                    Log.e("MainActivity", "Content values in place, calling contentprovider insert");
 
                     Uri insertedUri = mContext.getContentResolver().insert(
                             TMDBContract.MovieEntry.CONTENT_URI,
                             values
                     );
+//                    String[] args = new String[]{"user1", "user2"};
+//                    db.update("YOUR_TABLE", newValues, "name=? OR name=?", args);
 
                     values.clear();
+                    Uri specificURI = TMDBContract.MovieEntry.buildMovieURI(Integer.valueOf(tempJSON.getString(MOVIE_ID)));
+
+//                    Cursor locationCursor = mContext.getContentResolver().query(
+//                            WeatherContract.LocationEntry.CONTENT_URI,
+//                            new String[]{WeatherContract.LocationEntry._ID},
+//                            WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ?",
+//                            new String[]{locationSetting},
+//                            null);
                     if (SORT_BY_POPULARITY) {
-                        values.put(TMDBContract.MovieEntry.MOVIE_MOST_POPULAR, true);
-                        // Call the db update here
+                        values.put(TMDBContract.MovieEntry.MOVIE_MOST_POPULAR, "true");
+                        int result = mContext.getContentResolver().update(specificURI,
+                                values,
+                                TMDBContract.MovieEntry.MOVIE_ID + " = ?",
+                                new String[]{tempJSON.getString(MOVIE_ID)}
+                                );
+
                     } else {
-                        values.put(TMDBContract.MovieEntry.MOVIE_TOP_RATED, true);
-                        // Call the db update here;
+                        values.put(TMDBContract.MovieEntry.MOVIE_TOP_RATED, "true");
+                        int result = mContext.getContentResolver().update(specificURI,
+                                values,
+                                TMDBContract.MovieEntry.MOVIE_ID + " = ?",
+                                new String[]{tempJSON.getString(MOVIE_ID)}
+                        );
                     }
 
-                    // movies.add(tempMovie);
                 }
             }
 
