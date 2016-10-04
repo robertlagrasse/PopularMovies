@@ -161,8 +161,8 @@ public class MovieContentProvider extends ContentProvider {
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
                         projection,
-                        selection,
-                        selectionArgs,
+                        TMDBContract.MovieEntry.MOVIE_MOST_POPULAR + "= ?",
+                        new String[]{"true"},
                         null,
                         null,
                         sortOrder
@@ -176,8 +176,8 @@ public class MovieContentProvider extends ContentProvider {
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
                         projection,
-                        selection,
-                        selectionArgs,
+                        TMDBContract.MovieEntry.MOVIE_TOP_RATED + "= ?",
+                        new String[]{"true"},
                         null,
                         null,
                         sortOrder

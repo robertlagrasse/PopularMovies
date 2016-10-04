@@ -197,6 +197,9 @@ public class InternetDownloadTask {
                     values.put(TMDBContract.MovieEntry.MOVIE_VOTE_COUNT,        Long.parseLong(tempJSON.getString(MOVIE_VOTE_COUNT)));
                     values.put(TMDBContract.MovieEntry.MOVIE_VIDEO,             tempJSON.getString(MOVIE_VIDEO));
                     values.put(TMDBContract.MovieEntry.MOVIE_VOTE_AVERAGE,      Float.parseFloat(tempJSON.getString(MOVIE_VOTE_AVERAGE)));
+                    values.put(TMDBContract.MovieEntry.MOVIE_TOP_RATED,         "false");
+                    values.put(TMDBContract.MovieEntry.MOVIE_MOST_POPULAR,      "false");
+                    values.put(TMDBContract.MovieEntry.MOVIE_USER_FAVORITE,     "false");
 
                     Uri insertedUri = mContext.getContentResolver().insert(
                             TMDBContract.MovieEntry.CONTENT_URI,
