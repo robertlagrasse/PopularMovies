@@ -15,5 +15,5 @@ import java.util.ArrayList;
  *
  */
 public interface Communicator {
-    void respond(ArrayList<String> data);
+    void respond(long data);
 }

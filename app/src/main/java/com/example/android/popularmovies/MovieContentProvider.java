@@ -110,7 +110,7 @@ public class MovieContentProvider extends ContentProvider {
                 Log.e("MovieContentProvider", "projection: " + projection);
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
-                        projection,    // poster path
+                        projection,
                         selection,
                         selectionArgs,
                         null,
@@ -131,8 +131,8 @@ public class MovieContentProvider extends ContentProvider {
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
                         projection,
-                        selection,
-                        selectionArgs,
+                        TMDBContract.MovieEntry.COLUMN_UID + " = ?",
+                        new String[]{movie_id},
                         null,
                         null,
                         null

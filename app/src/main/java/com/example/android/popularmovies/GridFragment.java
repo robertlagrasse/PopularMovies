@@ -46,12 +46,6 @@ public class GridFragment extends Fragment {
     // Provides the reference back to MainActivity
     Communicator communicator;
 
-    // Place for the movies to wait for their turn in the gridview
-    ArrayList<MovieObject> theHopper;
-
-    // Takes in objects, spits out gridview food.
-    ImageAdapter imageAdapter;
-
     Context mContext;
 
     @Override
@@ -78,65 +72,18 @@ public class GridFragment extends Fragment {
                 getActivity(),
                 cursor);
 
-        // Build a reference to the gridview
         GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
 
-        // Connect the imageAdapter to the gridview
         gridview.setAdapter(adapter);
 
-        // Make the gridview listen for clicks
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view,
                                     int position, long id) {
             Log.e("GridView", "Position: " + position +" id: "+ id);
+                communicator.respond(id);
             }
         });
-
         return rootView;
-    }
-
-
-    // adapted from https://developer.android.com/guide/topics/ui/layout/gridview.html
-    public class ImageAdapter extends ArrayAdapter<MovieObject> {
-        private Context mContext;
-        private ArrayList<MovieObject> mMovies;
-        private int mResource;
-
-
-        public ImageAdapter(Context context, int resource, ArrayList<MovieObject> objects) {
-            super(context, resource, objects);
-            mContext = context;
-            mMovies = objects;
-            mResource = resource;
-        }
-
-        public int getCount() {
-            return mMovies.size();
-        }
-
-        public long getItemId(int position) {
-            return position;
-        }
-
-        // create a new ImageView for each item referenced by the Adapter
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ImageView imageView;
-
-            MovieObject movie = getItem(position);
-
-            if (convertView == null) {
-                // if it's not recycled, initialize some attributes
-                imageView = new ImageView(mContext);
-                // imageView.setLayoutParams(new GridView.LayoutParams(240, 240));
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setAdjustViewBounds(true);
-            } else {
-                imageView = (ImageView) convertView;
-            }
-            String baseurl = "http://image.tmdb.org/t/p/w185";
-            Picasso.with(getContext()).load(baseurl.concat(movie.getMovie_poster_path())).into(imageView);
-            return imageView;
-        }
     }
 }

@@ -24,6 +24,33 @@ public class MovieObject {
     private Boolean movie_video;
     private float movie_vote_average;
     private String movie_result_type;
+    private String movie_most_popular;
+    private String movie_top_rated;
+    private String movie_favorite;
+
+    public String getMovie_most_popular() {
+        return movie_most_popular;
+    }
+
+    public void setMovie_most_popular(String movie_most_popular) {
+        this.movie_most_popular = movie_most_popular;
+    }
+
+    public String getMovie_top_rated() {
+        return movie_top_rated;
+    }
+
+    public void setMovie_top_rated(String movie_top_rated) {
+        this.movie_top_rated = movie_top_rated;
+    }
+
+    public String getMovie_favorite() {
+        return movie_favorite;
+    }
+
+    public void setMovie_favorite(String movie_favorite) {
+        this.movie_favorite = movie_favorite;
+    }
 
     public String getMovie_result_type() {
         return movie_result_type;

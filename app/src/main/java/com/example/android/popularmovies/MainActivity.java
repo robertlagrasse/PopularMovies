@@ -92,19 +92,29 @@ public class MainActivity extends AppCompatActivity implements Communicator {
     }
 
     @Override
-    public void respond(ArrayList<String> data) {
+    public void respond(long data) {
 
         // An ArrayList called data has arrived. It needs to be passed via Intent
         // to DisplayActivity.
 
         // First, create the intent
-        Intent showMovieDetails = new Intent(this, DisplayActivity.class);
+        // Intent showMovieDetails = new Intent(this, DisplayActivity.class);
 
         // Next, attach the data to the intent
-        showMovieDetails.putExtra(MOVIE_DETAILS, data);
+        // showMovieDetails.putExtra(MOVIE_DETAILS, data);
 
         // Finally, start the activity
-        startActivity(showMovieDetails);
+        // startActivity(showMovieDetails);
+
+        // Create a FragmentManager and start a fragmentTransaction
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        // Create an instance of GridFragment and drop it on activity_main
+        DisplayFragment displayFragment = new DisplayFragment();
+        displayFragment.setPassedMovie(data);
+        fragmentTransaction.add(R.id.activity_main, displayFragment);
+        fragmentTransaction.commit();
     }
 
     @Override
