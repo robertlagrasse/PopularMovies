@@ -30,17 +30,41 @@ public class gvCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ImageView imageView = (ImageView) view;
+        // This is the poster image
+        ImageView poster = (ImageView) view.findViewById(R.id.poster_image);
+
+        // This is the icon I use to designate a favorite
+        ImageView favorite = (ImageView) view.findViewById(R.id.favorite_marker);
+
+        // This grabs the relevant data from the database
         String path = cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_POSTER_PATH));
+        String isFavorite = cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_USER_FAVORITE));
+
+        // This is where we find images.
         String baseurl = "http://image.tmdb.org/t/p/w185";
-        Picasso.with(context).load(baseurl.concat(path)).into(imageView);
+
+        // Check to see if we should show the favorites icon
+        if (isFavorite.equals("true")){
+            favorite.setVisibility(View.VISIBLE);
+        }
+        else {
+            favorite.setVisibility(View.INVISIBLE);
+        }
+        favorite.setVisibility(View.VISIBLE);
+
+        // Load the poster image
+        Picasso.with(context).load(baseurl.concat(path)).into(poster);
+
+        // Set the scaling
+        poster.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+        // *************  Fix the height hack!
+        poster.setMinimumHeight((poster.getWidth()*3)/2);
+        poster.setMaxHeight((poster.getWidth()*3)/2);
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        ImageView iView = new ImageView(context);
-        iView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        iView.setAdjustViewBounds(true);
-        return iView;
+        return LayoutInflater.from(context).inflate(R.layout.grid_item, parent, false);
     }
 }
