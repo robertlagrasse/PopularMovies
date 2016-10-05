@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import static android.R.attr.path;
+import static com.example.android.popularmovies.ViewHolder.favorite;
 import static java.security.AccessController.getContext;
 
 /**
@@ -30,12 +31,13 @@ public class gvCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        // This is the poster image
-        ImageView poster = (ImageView) view.findViewById(R.id.poster_image);
+//        // This is the poster image
+//        ImageView poster = (ImageView) view.findViewById(R.id.poster_image);
+//
+//        // This is the icon I use to designate a favorite
+//        ImageView favorite = (ImageView) view.findViewById(R.id.favorite_marker);
 
-        // This is the icon I use to designate a favorite
-        ImageView favorite = (ImageView) view.findViewById(R.id.favorite_marker);
-
+        ViewHolder viewHolder = (ViewHolder) view.getTag();
         // This grabs the relevant data from the database
         String path = cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_POSTER_PATH));
         String isFavorite = cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_USER_FAVORITE));
@@ -53,18 +55,18 @@ public class gvCursorAdapter extends CursorAdapter {
         favorite.setVisibility(View.VISIBLE);
 
         // Load the poster image
-        Picasso.with(context).load(baseurl.concat(path)).into(poster);
+        Picasso.with(context).load(baseurl.concat(path)).into(ViewHolder.poster);
 
         // Set the scaling
-        poster.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        ViewHolder.poster.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-        // *************  Fix the height hack!
-        poster.setMinimumHeight((poster.getWidth()*3)/2);
-        poster.setMaxHeight((poster.getWidth()*3)/2);
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return LayoutInflater.from(context).inflate(R.layout.grid_item, parent, false);
+        View view =  LayoutInflater.from(context).inflate(R.layout.grid_item, parent, false);
+        ViewHolder viewHolder = new ViewHolder(view);
+        view.setTag(viewHolder);
+        return view;
     }
 }
