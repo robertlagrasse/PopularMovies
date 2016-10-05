@@ -68,6 +68,7 @@ public class InternetDownloadTask {
             final String PARAMETER_API_KEY = "api_key";
             String webRequest = null;
 
+            // finalize the search
             if (SORT_BY_POPULARITY) {
                 webRequest = VALUE_BASE_URL + VALUE_SORT_BY_POPULARITY;
             } else {
@@ -80,9 +81,8 @@ public class InternetDownloadTask {
                     .build();
             // Log.e("doInBackground()", builtUri.toString());
 
-
+            // Pull some data
             try {
-
                 URL url = new URL(builtUri.toString());
 
                 // Create the request, and open the connection
@@ -143,7 +143,6 @@ public class InternetDownloadTask {
 
             // These are the JSON elements we need to extract
             final String MOVIE_RESULTS = "results";
-
             final String MOVIE_POSTER_PATH = "poster_path";
             final String MOVIE_ADULT = "adult";
             final String MOVIE_OVERVIEW = "overview";
@@ -169,16 +168,16 @@ public class InternetDownloadTask {
             // ArrayList to hold all of the extracted movies
             ArrayList<MovieObject> movies = new ArrayList<>();
 
-            // TODO: Tighten this up. Reuse same objects?
+
             // Iterate through the JSON array
             for (int i = 0; i < movieJSONArray.length(); i++) {
                 // Build an object to look at this JSON
                 JSONObject tempJSON = movieJSONArray.getJSONObject(i);
-                // Build an empty MovieObject
-                MovieObject tempMovie = new MovieObject();
+
+                // Build a CV object to hold the extracted data
                 ContentValues values = new ContentValues();
-                // TMDB occasionally sends results with missing poster paths
-                // Logging these as errors
+
+                // TMDB occasionally sends results with missing poster paths - skip those
                 if (tempJSON.getString(MOVIE_POSTER_PATH).contains("null")) {
                     Log.e("NULL Poster Path: ", tempJSON.getString(MOVIE_POSTER_PATH));
                 } else {
@@ -197,26 +196,22 @@ public class InternetDownloadTask {
                     values.put(TMDBContract.MovieEntry.MOVIE_VOTE_COUNT,        Long.parseLong(tempJSON.getString(MOVIE_VOTE_COUNT)));
                     values.put(TMDBContract.MovieEntry.MOVIE_VIDEO,             tempJSON.getString(MOVIE_VIDEO));
                     values.put(TMDBContract.MovieEntry.MOVIE_VOTE_AVERAGE,      Float.parseFloat(tempJSON.getString(MOVIE_VOTE_AVERAGE)));
-                    values.put(TMDBContract.MovieEntry.MOVIE_TOP_RATED,         "false");
+                    values.put(TMDBContract.MovieEntry.MOVIE_TOP_RATED,         "false"); // defaults on download. updated
                     values.put(TMDBContract.MovieEntry.MOVIE_MOST_POPULAR,      "false");
                     values.put(TMDBContract.MovieEntry.MOVIE_USER_FAVORITE,     "false");
 
+                    // Drop values into the database using ContentResolver
                     Uri insertedUri = mContext.getContentResolver().insert(
                             TMDBContract.MovieEntry.CONTENT_URI,
                             values
                     );
-//                    String[] args = new String[]{"user1", "user2"};
-//                    db.update("YOUR_TABLE", newValues, "name=? OR name=?", args);
 
                     values.clear();
+                    // Build a URI so the movie that was just inserted can be updated
                     Uri specificURI = TMDBContract.MovieEntry.buildMovieURI(Integer.valueOf(tempJSON.getString(MOVIE_ID)));
 
-//                    Cursor locationCursor = mContext.getContentResolver().query(
-//                            WeatherContract.LocationEntry.CONTENT_URI,
-//                            new String[]{WeatherContract.LocationEntry._ID},
-//                            WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ?",
-//                            new String[]{locationSetting},
-//                            null);
+                    // update the movie just downloaded above to reflect whether it came in
+                    // as the result of a search for popular or top rated movies.
                     if (SORT_BY_POPULARITY) {
                         values.put(TMDBContract.MovieEntry.MOVIE_MOST_POPULAR, "true");
                         int result = mContext.getContentResolver().update(specificURI,
@@ -236,17 +231,10 @@ public class InternetDownloadTask {
 
                 }
             }
-
-            // This will all go away as the CP will handle DB access.
-            /* openDB();
-            database.bulkInsert(movies);
-            closeDB();*/
-
         }
 
         @Override
         protected void onPostExecute(Boolean dibResult) {
-
             if (dibResult) {
                 if (!THRU_ALREADY) {
                     THRU_ALREADY = true;
