@@ -12,7 +12,9 @@ import java.net.URI;
 import static android.R.attr.id;
 import static android.R.attr.name;
 import static android.icu.text.DateTimePatternGenerator.PatternInfo.CONFLICT;
+import static android.os.Build.VERSION_CODES.M;
 import static android.webkit.WebSettings.PluginState.ON;
+import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_ID;
 
 
 /**
@@ -26,7 +28,7 @@ public class TMDBContract {
     private static final String     VARCHAR_255         = " VARCHAR(255), ";
     private static final String     INTEGER             = " INTEGER, ";
     private static final String     FLOAT               = " FLOAT, ";
-    // private static final String     BOOLEAN             = " BOOLEAN, ";
+    private static final String     BOOLEAN             = " BOOLEAN, ";
 
     // This defines the content authority
     public static final String CONTENT_AUTHORITY    = "com.example.android.popularmovies";
@@ -36,34 +38,37 @@ public class TMDBContract {
 
     // This path matches the movies table
     public static final String MOVIE_PATH = "movies";
+    public static final Uri CONTENT_URI =
+            BASE_CONTENT_URI.buildUpon().appendPath(MOVIE_PATH).build();
 
+//    public static final String CONTENT_TYPE =
+//            ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + MOVIE_PATH;
+//    public static final String CONTENT_ITEM_TYPE =
+//            ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + MOVIE_PATH;
 
+    public static Uri buildMovieURI(long id) {
+        return ContentUris.withAppendedId(CONTENT_URI, id);
+    }
+
+    public static Uri buildUserSelectionURI() {
+        return CONTENT_URI.buildUpon().appendPath("choice").build();
+    }
+    public static Uri buildPopularURI() {
+        return CONTENT_URI.buildUpon().appendPath("popular").build();
+    }
+    public static Uri buildTopRatedURI() {
+        return CONTENT_URI.buildUpon().appendPath("top_rated").build();
+    }
+    public static Uri buildFavoritesURI() {
+        return CONTENT_URI.buildUpon().appendPath("favorites").build();
+    }
 
     public static final class MovieEntry implements BaseColumns {
 
         // The content URI represents the base location for this table
-        public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(MOVIE_PATH).build();
 
 
-        public static final String CONTENT_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + MOVIE_PATH;
-        public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + MOVIE_PATH;
 
-        public static Uri buildMovieURI(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
-        }
-
-        public static Uri buildPopularURI() {
-            return CONTENT_URI.buildUpon().appendPath("popular").build();
-        }
-        public static Uri buildTopRatedURI() {
-            return CONTENT_URI.buildUpon().appendPath("top_rated").build();
-        }
-        public static Uri buildFavoritesURI() {
-            return CONTENT_URI.buildUpon().appendPath("favorites").build();
-        }
 
         /*
         This class defines the properties of each movie. This is identical to
@@ -94,7 +99,7 @@ public class TMDBContract {
         public static final String MOVIE_MOST_POPULAR         = "most_popular";
         public static final String MOVIE_USER_FAVORITE        = "user_favorite";
 
-
+        // Handy string array for when you need to refer to all columns
         public static final String[] MOVIE_ALL_KEYS = new String[] {
                 COLUMN_UID,
                 MOVIE_POSTER_PATH,
@@ -115,6 +120,7 @@ public class TMDBContract {
                 MOVIE_MOST_POPULAR,
                 MOVIE_USER_FAVORITE};
 
+        // SQL Create table command
         public static final String CREATE_TABLE               =
                         "CREATE TABLE "            +
                         TABLE_NAME                 + "(" +
@@ -142,11 +148,26 @@ public class TMDBContract {
     /* Inner class that defines the contents of the UserMetrics table */
     public static final class UserMetrics implements BaseColumns {
 
+        // COLUMN Names for this table
         public static final String TABLE_NAME                 = "user_metrics";
-
         public static final String COLUMN_UID                 = "_id";
-        public static final String COLUMN_MOVIE_ID            = "tmdb_id"; // This column ties to one in MovieEntry
-        public static final String COLUMN_USER_RATING         = "user_rating";
+        public static final String COLUMN_SELECTED_MOVIE      = "user_selection";
+
+        // String array with all column names for this table
+        public static final String[] MOVIE_ALL_KEYS = new String[] {
+                TABLE_NAME,
+                COLUMN_UID,
+                COLUMN_SELECTED_MOVIE
+        };
+
+        // SQL Create table command
+        public static final String CREATE_TABLE               =
+                "CREATE TABLE "            +
+                        TABLE_NAME                 + "(" +
+                        COLUMN_UID                 + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        COLUMN_SELECTED_MOVIE      + INTEGER +
+                        "UNIQUE ("+ COLUMN_SELECTED_MOVIE +") ON CONFLICT REPLACE);";
+
 
     }
 }

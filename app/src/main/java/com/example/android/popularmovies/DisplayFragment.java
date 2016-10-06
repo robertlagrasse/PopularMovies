@@ -2,25 +2,19 @@ package com.example.android.popularmovies;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
-import java.util.ArrayList;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
+import static android.R.attr.id;
 import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_BACKDROP_PATH;
 import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_OVERVIEW;
 import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_POSTER_PATH;
@@ -57,8 +51,25 @@ public class DisplayFragment extends Fragment {
 
         context = getActivity();
         Cursor cursor;
+
         cursor = getActivity().getContentResolver().query(
-                TMDBContract.MovieEntry.buildMovieURI(passedMovie),
+                TMDBContract.buildUserSelectionURI(),
+                null,
+                null,
+                null,
+                TMDBContract.UserMetrics.COLUMN_UID + " DESC LIMIT 1");
+        long moviequery = 0;
+
+        if (cursor.moveToFirst()) {
+            moviequery = Long.parseLong((cursor.getString(cursor.getColumnIndex(TMDBContract.UserMetrics.COLUMN_SELECTED_MOVIE))));
+            Log.e("displayFragment:", (cursor.getString(cursor.getColumnIndex(TMDBContract.UserMetrics.COLUMN_SELECTED_MOVIE))));
+        } else {
+            Log.e("DisplayFragment", "Cursor returned no rows");
+        }
+        cursor.close();
+
+        cursor = getActivity().getContentResolver().query(
+                TMDBContract.buildMovieURI(moviequery),
                 TMDBContract.MovieEntry.MOVIE_ALL_KEYS,
                 null,
                 null,

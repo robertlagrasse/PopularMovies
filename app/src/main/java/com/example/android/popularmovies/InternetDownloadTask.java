@@ -202,13 +202,13 @@ public class InternetDownloadTask {
 
                     // Drop values into the database using ContentResolver
                     Uri insertedUri = mContext.getContentResolver().insert(
-                            TMDBContract.MovieEntry.CONTENT_URI,
+                            TMDBContract.CONTENT_URI,
                             values
                     );
 
                     values.clear();
                     // Build a URI so the movie that was just inserted can be updated
-                    Uri specificURI = TMDBContract.MovieEntry.buildMovieURI(Integer.valueOf(tempJSON.getString(MOVIE_ID)));
+                    Uri specificURI = TMDBContract.buildMovieURI(Integer.valueOf(tempJSON.getString(MOVIE_ID)));
 
                     // update the movie just downloaded above to reflect whether it came in
                     // as the result of a search for popular or top rated movies.

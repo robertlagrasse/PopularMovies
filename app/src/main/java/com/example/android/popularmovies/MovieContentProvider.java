@@ -45,6 +45,7 @@ public class MovieContentProvider extends ContentProvider {
     private static final int FAVORITES      = 2;
     private static final int POPULAR        = 3;
     private static final int TOP_RATED      = 4;
+    private static final int USER_CHOICE    = 5;
 
     private static final UriMatcher uriMatcher = getUriMatcher();
 
@@ -55,6 +56,7 @@ public class MovieContentProvider extends ContentProvider {
         uriMatcher.addURI(TMDBContract.CONTENT_AUTHORITY, "movies/favorites", FAVORITES);
         uriMatcher.addURI(TMDBContract.CONTENT_AUTHORITY, "movies/popular", POPULAR);
         uriMatcher.addURI(TMDBContract.CONTENT_AUTHORITY, "movies/top_rated", TOP_RATED);
+        uriMatcher.addURI(TMDBContract.CONTENT_AUTHORITY, "movies/choice", USER_CHOICE);
         return uriMatcher;
     }
 
@@ -185,6 +187,22 @@ public class MovieContentProvider extends ContentProvider {
                 break;
             }
 
+            case USER_CHOICE: {
+                Log.e("MovieContentProvider", "uri " + uri + " Matched USER_CHOICE");
+
+                // alter selection logic to only return top_rated. Ignore all other user input
+                retCursor = databaseManager.getReadableDatabase().query(
+                        TMDBContract.UserMetrics.TABLE_NAME,
+                        new String[]{TMDBContract.UserMetrics.COLUMN_UID, TMDBContract.UserMetrics.COLUMN_SELECTED_MOVIE},
+                        selection,
+                        null,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -227,7 +245,17 @@ public class MovieContentProvider extends ContentProvider {
                 // Log.e("CP_insert", contentValues.getAsString(TMDBContract.MovieEntry.MOVIE_TITLE));
                 long _id = db.insert(TMDBContract.MovieEntry.TABLE_NAME, null, contentValues);
                 if (_id < 0) {
-                    // Log.e("CP_insert", "Did not insert :" + contentValues.getAsString(TMDBContract.MovieEntry.MOVIE_TITLE));
+                    // TODO: This logic is broken in all cases and needs to be fixed
+                    // if the id < 0, an insert wasn't made. If the id > 0, and insert
+                    // was made. Either way, the returned URI should indicate the result.
+                    returnUri = Uri.withAppendedPath(uri, String.valueOf(_id));
+                }
+                break;
+            }
+            case USER_CHOICE: {
+                long _id = db.insert(TMDBContract.UserMetrics.TABLE_NAME, null, contentValues);
+                Log.e("ContentProvider","After insert, _id = " + _id);
+                if (_id < 0) {
                     returnUri = Uri.withAppendedPath(uri, String.valueOf(_id));
                 }
                 break;

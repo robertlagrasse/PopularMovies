@@ -62,7 +62,7 @@ public class GridFragment extends Fragment {
         Cursor cursor;
 
         cursor = mContext.getContentResolver().query(
-                TMDBContract.MovieEntry.buildTopRatedURI(),
+                TMDBContract.buildTopRatedURI(),
                 null,
                 null,
                 null,
