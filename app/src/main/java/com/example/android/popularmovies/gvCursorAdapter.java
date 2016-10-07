@@ -55,7 +55,7 @@ public class gvCursorAdapter extends CursorAdapter {
         favorite.setVisibility(View.VISIBLE);
 
         // Load the poster image
-        Picasso.with(context).load(baseurl.concat(path)).into(ViewHolder.poster);
+        Picasso.with(context).load(baseurl.concat(path)).placeholder(R.drawable.tupac).into(ViewHolder.poster);
 
         // Set the scaling
         ViewHolder.poster.setScaleType(ImageView.ScaleType.CENTER_CROP);

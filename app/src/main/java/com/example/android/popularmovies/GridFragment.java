@@ -34,6 +34,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import static android.R.attr.data;
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -80,8 +81,17 @@ public class GridFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view,
                                     int position, long id) {
-            Log.e("GridView", "Position: " + position +" id: "+ id);
-                communicator.respond(id);
+
+                Log.e("GridView", "Position: " + position +" id: "+ id);
+                ContentValues values = new ContentValues();
+
+                values.put(TMDBContract.UserMetrics.COLUMN_SELECTED_MOVIE, id);
+
+                Uri insertedUri = getActivity().getContentResolver().insert(
+                        TMDBContract.buildUserSelectionURI(),
+                        values
+                );
+                communicator.respond();
             }
         });
         return rootView;

@@ -1,11 +1,8 @@
 package com.example.android.popularmovies;
 
-
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -13,17 +10,23 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_POSTER_PATH;
-
-
 public class MainActivity extends AppCompatActivity implements Communicator {
-    String GRID_FRAGMENT_TAG = "grid";
-    String DISPLAY_FRAGMENT_TAG = "display";
+    static final String GRID_FRAGMENT_TAG = "grid";
+    static final String DISPLAY_FRAGMENT_TAG = "display";
+    static final String LAST_SEEN_TAG = "LAST_SEEN_TAG";
+    String LastVisible;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (savedInstanceState != null){
+            LastVisible = savedInstanceState.getString(LAST_SEEN_TAG);
+        }
+        else {
+            LastVisible = GRID_FRAGMENT_TAG;
+        }
+        Log.e("onCreate()", "LastVisible: " + LastVisible);
 
         InternetDownloadTask pull = new InternetDownloadTask(this);
         pull.updateMovies();
@@ -35,9 +38,19 @@ public class MainActivity extends AppCompatActivity implements Communicator {
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        // Create an instance of GridFragment and drop it on activity_main
-        GridFragment gridFragment = new GridFragment();
-        fragmentTransaction.add(R.id.activity_main, gridFragment, GRID_FRAGMENT_TAG);
+        switch (LastVisible) {
+            case DISPLAY_FRAGMENT_TAG: {
+                Log.e("onCreate()","DISPLAY_FRAGMENT_TAG case reached.");
+                DisplayFragment displayFragment = new DisplayFragment();
+                fragmentTransaction.replace(R.id.activity_main, displayFragment, DISPLAY_FRAGMENT_TAG);
+                break;
+            }
+            default: {
+                Log.e("onCreate()","default case reached.");
+                GridFragment gridFragment = new GridFragment();
+                fragmentTransaction.add(R.id.activity_main, gridFragment, GRID_FRAGMENT_TAG);
+            }
+        }
         fragmentTransaction.commit();
     }
 
@@ -59,16 +72,7 @@ public class MainActivity extends AppCompatActivity implements Communicator {
     }
 
     @Override
-    public void respond(long data) {
-        ContentValues values = new ContentValues();
-        values.put(TMDBContract.UserMetrics.COLUMN_SELECTED_MOVIE, data);
-
-        Uri insertedUri = this.getContentResolver().insert(
-                TMDBContract.buildUserSelectionURI(),
-                values
-        );
-
-        Log.e("MainActivity", "Returned URI: " + insertedUri.toString());
+    public void respond() {
 
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -80,6 +84,31 @@ public class MainActivity extends AppCompatActivity implements Communicator {
         fragmentTransaction.addToBackStack(GRID_FRAGMENT_TAG);
         fragmentTransaction.replace(R.id.activity_main, displayFragment, DISPLAY_FRAGMENT_TAG);
         fragmentTransaction.commit();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.e("MainActivity", "onStop() called.");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        DisplayFragment displayTest = (DisplayFragment) getFragmentManager().findFragmentByTag(DISPLAY_FRAGMENT_TAG);
+        if (displayTest != null && displayTest.isVisible()) {
+            savedInstanceState.putString(LAST_SEEN_TAG , DISPLAY_FRAGMENT_TAG);
+        }
+        else {
+            savedInstanceState.putString(LAST_SEEN_TAG , GRID_FRAGMENT_TAG);
+        }
+    }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.e("onRestoreInstanceState","onRestoreInstanceState");
+        LastVisible = savedInstanceState.getString(LAST_SEEN_TAG);
+        Log.e("onRestoreInstanceState","LastVisible was: " + LastVisible);
     }
 }
 

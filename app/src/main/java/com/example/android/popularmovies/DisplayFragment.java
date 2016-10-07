@@ -35,7 +35,6 @@ public class DisplayFragment extends Fragment {
     // This is the base path for all images.
     final String baseurl = "http://image.tmdb.org/t/p/w780";
 
-    private long passedMovie;
     Context context;
 
     @Override
@@ -127,7 +126,4 @@ public class DisplayFragment extends Fragment {
         return rootView;
     }
 
-    public void setPassedMovie(long passedMovie) {
-        this.passedMovie = passedMovie;
-    }
 }
