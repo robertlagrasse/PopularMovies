@@ -187,7 +187,7 @@ public class InternetDownloadTask {
                     values.put(TMDBContract.MovieEntry.MOVIE_OVERVIEW,          tempJSON.getString(MOVIE_OVERVIEW));
                     values.put(TMDBContract.MovieEntry.MOVIE_RELEASE_DATE,      tempJSON.getString(MOVIE_RELEASE_DATE));
                     values.put(TMDBContract.MovieEntry.MOVIE_GENRE_IDS,         tempJSON.getString(MOVIE_GENRE_IDS));
-                    values.put(TMDBContract.MovieEntry.MOVIE_ID,                Integer.valueOf(tempJSON.getString(MOVIE_ID)));
+                    values.put(TMDBContract.MovieEntry.MOVIE_ID,                tempJSON.getString(MOVIE_ID));
                     values.put(TMDBContract.MovieEntry.MOVIE_ORIGINAL_TITLE,    tempJSON.getString(MOVIE_ORIGINAL_TITLE));
                     values.put(TMDBContract.MovieEntry.MOVIE_ORIGINAL_LANGUAGE, tempJSON.getString(MOVIE_ORIGINAL_LANGUAGE));
                     values.put(TMDBContract.MovieEntry.MOVIE_TITLE,             tempJSON.getString(MOVIE_TITLE));

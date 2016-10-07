@@ -130,7 +130,7 @@ public class TMDBContract {
                         MOVIE_OVERVIEW             + VARCHAR_255 +
                         MOVIE_RELEASE_DATE         + VARCHAR_255 +
                         MOVIE_GENRE_IDS            + VARCHAR_255 +
-                        MOVIE_ID                   + INTEGER +
+                        MOVIE_ID                   + VARCHAR_255 +
                         MOVIE_ORIGINAL_TITLE       + VARCHAR_255 +
                         MOVIE_ORIGINAL_LANGUAGE    + VARCHAR_255 +
                         MOVIE_TITLE                + VARCHAR_255 +

@@ -14,7 +14,7 @@ public class MovieObject {
     private String movie_overview;
     private String movie_release_date;
     private String movie_genre_ids;
-    private long movie_id;
+    private String movie_id;
     private String movie_original_title;
     private String movie_original_language;
     private String movie_title;
@@ -80,7 +80,7 @@ public class MovieObject {
         return movie_genre_ids;
     }
 
-    public long getMovie_id() {
+    public String getMovie_id() {
         return movie_id;
     }
 
@@ -136,7 +136,7 @@ public class MovieObject {
         movie_genre_ids = new_value;
     }
 
-    public void setMovie_id(long new_value) {
+    public void setMovie_id(String  new_value) {
         movie_id = new_value;
     }
 
