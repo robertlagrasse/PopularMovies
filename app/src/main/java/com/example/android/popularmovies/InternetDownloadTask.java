@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,7 +29,7 @@ import static java.security.AccessController.getContext;
 
 public class InternetDownloadTask {
 
-    final String VALUE_API_KEY = "";
+    final String VALUE_API_KEY = "f42ec8a4b30bcaf191a165668a819fda";
     private Boolean SORT_BY_POPULARITY = true;
     private Boolean THRU_ALREADY = false;
     private final Context mContext;
@@ -245,6 +246,8 @@ public class InternetDownloadTask {
                     // Log.e("onPostExecute", "Second Time Through");
                 }
             } else {
+                Toast.makeText(mContext, "Internet Connection Issue",
+                        Toast.LENGTH_LONG).show();
                 Log.e("onPostExecute():","doInBackground did not return true");
             }
         }

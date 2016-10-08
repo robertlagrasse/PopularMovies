@@ -2,6 +2,7 @@ package com.example.android.popularmovies;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
@@ -29,6 +31,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+import static android.media.CamcorderProfile.get;
 import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_BACKDROP_PATH;
 import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_GENRE_IDS;
 import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_ID;
@@ -151,7 +155,7 @@ public class DisplayFragment extends Fragment {
         // Grab any reviews or trailers
         extras = new ArrayList<>();
         adapter = new ListViewArrayAdapter(getActivity(), R.id.display_list_view, extras);
-        ListView listView = (ListView) rootView.findViewById(R.id.display_list_view);
+        final ListView listView = (ListView) rootView.findViewById(R.id.display_list_view);
         listView.setAdapter(adapter);
         GetMovieExtras getsome = new GetMovieExtras();
         getsome.setBuiltUri(buildURI(1, moviequery));
@@ -162,12 +166,22 @@ public class DisplayFragment extends Fragment {
         getmore.setBuiltUri(buildURI(2, moviequery));
         getmore.execute();
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String location = extras.get(i).getLocation();
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(location));
+                startActivity(intent);
+            }
+        });
+
         return rootView;
     }
 
     private Uri buildURI(int type, long movieID){
         final String VALUE_BASE_URL = "https://api.themoviedb.org/3/movie/";
-        final String VALUE_API_KEY = "";
+        final String VALUE_API_KEY = "f42ec8a4b30bcaf191a165668a819fda";
 
         final String PARAMETER_SORT_BY = "sort_by";
         final String VALUE_SORT_BY_POPULARITY = "popular";
@@ -280,8 +294,6 @@ public class DisplayFragment extends Fragment {
         final String URL = "url";
         final String KEY = "key";
 
-       Log.e("JSONParser",rawInput);
-       Log.e("JSONParser", type);
        // Build a JSONObject from the rawInput. This is going to be multiple
        //entries at this point.
        JSONObject blobOfJSON = new JSONObject(rawInput);
