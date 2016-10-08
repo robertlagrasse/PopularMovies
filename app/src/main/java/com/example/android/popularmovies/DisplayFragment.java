@@ -1,7 +1,6 @@
 package com.example.android.popularmovies;
 
 import android.app.Fragment;
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -12,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -29,9 +29,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import static android.R.attr.id;
-import static android.os.Build.VERSION_CODES.M;
-import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_ADULT;
 import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_BACKDROP_PATH;
 import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_GENRE_IDS;
 import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_ID;
@@ -60,7 +57,8 @@ public class DisplayFragment extends Fragment {
     final String baseurl = "http://image.tmdb.org/t/p/w780";
 
     Context context;
-    ArrayList<DisplayExtras> ReviewsAndVideos;
+    ArrayList<DisplayExtras> extras;
+    ListViewArrayAdapter adapter;
     @Override
     public void onResume() {
         super.onResume();
@@ -125,19 +123,13 @@ public class DisplayFragment extends Fragment {
         }
         cursor.close();
 
-        // Drop elements on screen (method?)
+        ImageView poster = (ImageView) rootView.findViewById(R.id.posterpath);
 
-        ImageView poster = (ImageView) rootView.findViewById(R.id.poster);
-
-        Picasso.with(context)
+        Picasso.with(getActivity())
                 .load(baseurl.concat(movie.getMovie_poster_path()))
                 .into(poster);
 
-        ImageView backDrop = (ImageView) rootView.findViewById(R.id.backdrop);
-
-        Picasso.with(context)
-                .load(baseurl.concat(movie.getMovie_backdrop_path()))
-                .into(backDrop);
+        Log.e("Poster",baseurl.concat(movie.getMovie_poster_path()));
 
         TextView titleBar = (TextView) rootView.findViewById(R.id.title_bar);
 
@@ -157,7 +149,10 @@ public class DisplayFragment extends Fragment {
         moviequery = Long.parseLong(movie.getMovie_id());
 
         // Grab any reviews or trailers
-        ReviewsAndVideos = new ArrayList<>();
+        extras = new ArrayList<>();
+        adapter = new ListViewArrayAdapter(getActivity(), R.id.display_list_view, extras);
+        ListView listView = (ListView) rootView.findViewById(R.id.display_list_view);
+        listView.setAdapter(adapter);
         GetMovieExtras getsome = new GetMovieExtras();
         getsome.setBuiltUri(buildURI(1, moviequery));
         getsome.execute();
@@ -167,9 +162,6 @@ public class DisplayFragment extends Fragment {
         getmore.setBuiltUri(buildURI(2, moviequery));
         getmore.execute();
 
-        for (DisplayExtras extra : ReviewsAndVideos){
-            Log.e("EXTRAS!", extra.getLocation());
-        }
         return rootView;
     }
 
@@ -269,8 +261,9 @@ public class DisplayFragment extends Fragment {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             try {
-                ArrayList<DisplayExtras> extras = parseJSONdata(s, builtUri.getPathSegments().get(3));
-                ReviewsAndVideos.addAll(extras);
+                extras.addAll(parseJSONdata(s, builtUri.getPathSegments().get(3)));
+                adapter.notifyDataSetChanged();
+                Log.e("onPostExecute", "extras.size()" + extras.size());
             }
             catch (JSONException e) {
                 e.printStackTrace();
