@@ -103,13 +103,7 @@ public class MovieContentProvider extends ContentProvider {
         Cursor retCursor;
         switch (getUriMatcher().match(uri)) {
 
-            // The GridFragment will ask for multiple movies
-            // It needs to see poster path
-            // Later, it will also need to pull favorites status. This will require some
-            // database modifications.
-
             case ALL_MOVIES: {
-                Log.e("MovieContentProvider", "projection: " + projection);
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
                         projection,
@@ -128,7 +122,6 @@ public class MovieContentProvider extends ContentProvider {
             // for now, I just want it off the ground.
 
             case ONE_MOVIE: {
-                Log.e("MovieContentProvider", "uri " + uri + " Matched ONE_MOVIE");
                 String movie_id = uri.getPathSegments().get(1);
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
@@ -142,7 +135,6 @@ public class MovieContentProvider extends ContentProvider {
                 break;
             }
             case FAVORITES: {
-                Log.e("MovieContentProvider", "uri " + uri + " Matched FAVORITES");
 
                 // alter selection logic to only return favorites. Ignore all other user input
                 retCursor = databaseManager.getReadableDatabase().query(
@@ -157,7 +149,6 @@ public class MovieContentProvider extends ContentProvider {
                 break;
             }
             case POPULAR: {
-                Log.e("MovieContentProvider", "uri " + uri + " Matched POPULAR");
 
                 // alter selection logic to only return popular. Ignore all other user input
                 retCursor = databaseManager.getReadableDatabase().query(
@@ -172,7 +163,6 @@ public class MovieContentProvider extends ContentProvider {
                 break;
             }
             case TOP_RATED: {
-                Log.e("MovieContentProvider", "uri " + uri + " Matched TOP_RATED");
 
                 // alter selection logic to only return top_rated. Ignore all other user input
                 retCursor = databaseManager.getReadableDatabase().query(
@@ -188,7 +178,6 @@ public class MovieContentProvider extends ContentProvider {
             }
 
             case USER_CHOICE: {
-                Log.e("MovieContentProvider", "uri " + uri + " Matched USER_CHOICE");
 
                 // alter selection logic to only return top_rated. Ignore all other user input
                 retCursor = databaseManager.getReadableDatabase().query(
@@ -242,7 +231,6 @@ public class MovieContentProvider extends ContentProvider {
         returnUri = uri;
         switch (match) {
             case ALL_MOVIES: {
-                // Log.e("CP_insert", contentValues.getAsString(TMDBContract.MovieEntry.MOVIE_TITLE));
                 long _id = db.insert(TMDBContract.MovieEntry.TABLE_NAME, null, contentValues);
                 if (_id < 0) {
                     // TODO: This logic is broken in all cases and needs to be fixed
@@ -254,7 +242,6 @@ public class MovieContentProvider extends ContentProvider {
             }
             case USER_CHOICE: {
                 long _id = db.insert(TMDBContract.UserMetrics.TABLE_NAME, null, contentValues);
-                Log.e("ContentProvider","After insert, _id = " + _id);
                 if (_id < 0) {
                     returnUri = Uri.withAppendedPath(uri, String.valueOf(_id));
                 }
@@ -292,8 +279,7 @@ public class MovieContentProvider extends ContentProvider {
     }
 
     @Override
-    public int update(
-            Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = databaseManager.getWritableDatabase();
         final int match = uriMatcher.match(uri);
         int rowsUpdated;
@@ -301,7 +287,10 @@ public class MovieContentProvider extends ContentProvider {
         switch (match) {
             case ONE_MOVIE:
                 String movie = uri.getPathSegments().get(1);
-                rowsUpdated = db.update(TMDBContract.MovieEntry.TABLE_NAME, values, selection, selectionArgs);
+                rowsUpdated = db.update(TMDBContract.MovieEntry.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

@@ -31,13 +31,12 @@ public class gvCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-//        // This is the poster image
-//        ImageView poster = (ImageView) view.findViewById(R.id.poster_image);
-//
-//        // This is the icon I use to designate a favorite
-//        ImageView favorite = (ImageView) view.findViewById(R.id.favorite_marker);
+        // This is the poster image
+        ImageView poster = (ImageView) view.findViewById(R.id.poster_image);
 
-        ViewHolder viewHolder = (ViewHolder) view.getTag();
+        // This is the icon I use to designate a favorite
+        ImageView favorite = (ImageView) view.findViewById(R.id.favorite_marker);
+
         // This grabs the relevant data from the database
         String path = cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_POSTER_PATH));
         String isFavorite = cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_USER_FAVORITE));
@@ -52,13 +51,13 @@ public class gvCursorAdapter extends CursorAdapter {
         else {
             favorite.setVisibility(View.INVISIBLE);
         }
-        favorite.setVisibility(View.VISIBLE);
+        // Set the scaling
+        poster.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
         // Load the poster image
-        Picasso.with(context).load(baseurl.concat(path)).placeholder(R.drawable.tupac).into(ViewHolder.poster);
+        Picasso.with(context).load(baseurl.concat(path)).placeholder(R.drawable.tupac).into(poster);
 
-        // Set the scaling
-        ViewHolder.poster.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
 
     }
 

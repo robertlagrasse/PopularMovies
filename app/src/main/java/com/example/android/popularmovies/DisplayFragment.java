@@ -1,6 +1,7 @@
 package com.example.android.popularmovies;
 
 import android.app.Fragment;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -31,7 +33,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 import static android.media.CamcorderProfile.get;
 import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_BACKDROP_PATH;
 import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_GENRE_IDS;
@@ -103,7 +104,7 @@ public class DisplayFragment extends Fragment {
                 null);
 
         // Populate the movie object
-        MovieObject movie = new MovieObject();
+        final MovieObject movie = new MovieObject();
         if (cursor.moveToFirst()) {
             movie.setMovie_poster_path(cursor.getString(cursor.getColumnIndex(MOVIE_POSTER_PATH)));
             movie.setMovie_overview(cursor.getString(cursor.getColumnIndex(MOVIE_OVERVIEW)));
@@ -135,6 +136,44 @@ public class DisplayFragment extends Fragment {
 
         Log.e("Poster",baseurl.concat(movie.getMovie_poster_path()));
 
+        final ImageView LikeButton = (ImageView) rootView.findViewById(R.id.like_button);
+        int likeImage = R.drawable.mightlike;
+        if (movie.getMovie_favorite().equals("true")){
+            likeImage = R.drawable.dolike;
+        }
+        LikeButton.setImageResource(likeImage);
+
+
+        LikeButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Read Status
+                ContentValues values = new ContentValues();
+                values.clear();
+                if(movie.getMovie_favorite().equals("false")){
+                    movie.setMovie_favorite("true");
+                    values.put(TMDBContract.MovieEntry.MOVIE_USER_FAVORITE, "true");                    // Update Image with true image
+                    Toast.makeText(getActivity(), "Added to Favorites",
+                            Toast.LENGTH_LONG).show();
+                    LikeButton.setImageResource(R.drawable.dolike);
+                } else {
+                    movie.setMovie_favorite("false");
+                    values.put(TMDBContract.MovieEntry.MOVIE_USER_FAVORITE, "false");                    // Update Image with false image
+                    Toast.makeText(getActivity(), "Removed from Favorites",
+                            Toast.LENGTH_LONG).show();
+                    LikeButton.setImageResource(R.drawable.mightlike);
+                }
+                // Update database
+                int response = context.getContentResolver().update(TMDBContract.buildMovieURI(Long.parseLong(movie.getMovie_id())),
+                        values,
+                        TMDBContract.MovieEntry.MOVIE_ID + " = ?",
+                        new String[]{movie.getMovie_id()});
+                Log.e("Update", "response: " + response);
+            }
+        });
+
+
+
+
         TextView titleBar = (TextView) rootView.findViewById(R.id.title_bar);
 
         titleBar.setText(movie.getMovie_title());
@@ -150,7 +189,7 @@ public class DisplayFragment extends Fragment {
         ratingBar.setRating((float) (rating/2.0));
 
         Log.e("moviequery", "sending " +moviequery);
-        moviequery = Long.parseLong(movie.getMovie_id());
+        long movieid = Long.parseLong(movie.getMovie_id());
 
         // Grab any reviews or trailers
         extras = new ArrayList<>();
@@ -158,12 +197,12 @@ public class DisplayFragment extends Fragment {
         final ListView listView = (ListView) rootView.findViewById(R.id.display_list_view);
         listView.setAdapter(adapter);
         GetMovieExtras getsome = new GetMovieExtras();
-        getsome.setBuiltUri(buildURI(1, moviequery));
+        getsome.setBuiltUri(buildURI(1, movieid));
         getsome.execute();
         // Parse
         // Drop into ArrayList<DisplayExtras>
         GetMovieExtras getmore = new GetMovieExtras();
-        getmore.setBuiltUri(buildURI(2, moviequery));
+        getmore.setBuiltUri(buildURI(2, movieid));
         getmore.execute();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -181,7 +220,7 @@ public class DisplayFragment extends Fragment {
 
     private Uri buildURI(int type, long movieID){
         final String VALUE_BASE_URL = "https://api.themoviedb.org/3/movie/";
-        final String VALUE_API_KEY = "f42ec8a4b30bcaf191a165668a819fda";
+
 
         final String PARAMETER_SORT_BY = "sort_by";
         final String VALUE_SORT_BY_POPULARITY = "popular";
@@ -202,7 +241,7 @@ public class DisplayFragment extends Fragment {
         }
         // Build the URL
         return Uri.parse(webRequest).buildUpon()
-                .appendQueryParameter(PARAMETER_API_KEY, VALUE_API_KEY)
+                .appendQueryParameter(PARAMETER_API_KEY, TMDBContract.API_KEY)
                 .build();
     }
 

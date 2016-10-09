@@ -24,6 +24,8 @@ import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_ID
  */
 public class TMDBContract {
 
+    public static final String     API_KEY        = "";
+
     // Define some SQL Data Types - makes table creation code cleaner and less error prone
     private static final String     VARCHAR_255         = " VARCHAR(255), ";
     private static final String     INTEGER             = " INTEGER, ";

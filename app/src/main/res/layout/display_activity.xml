@@ -34,7 +34,8 @@
                 android:id="@+id/posterpath"
                 android:scaleType="fitCenter"
                 android:layout_margin="4dp"
-                android:src="@drawable/tupac" />
+                android:src="@drawable/tupac"
+                android:layout_gravity="center_horizontal"/>
             <RatingBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -42,7 +43,7 @@
                 android:numStars="5"
                 android:id="@+id/rating_bar"
                 android:background="@color/shady_background"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center_horizontal"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -50,18 +51,20 @@
                 android:text="@string/summary_text"
                 android:layout_margin="4dp"
                 android:textSize="@dimen/text_size_description"
-                android:textColor="@color/color_text_display_activity"/>
+                android:textColor="@color/color_text_display_activity"
+                android:layout_gravity="center_horizontal"/>
         </LinearLayout>
     </ScrollView>
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="?android:attr/listPreferredItemHeight"
         android:layout_height="match_parent">
-        <ImageButton
+        <ImageView
             android:layout_width="?android:attr/listPreferredItemHeight"
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:src="@drawable/tupac"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop"
+            android:id="@+id/like_button"/>
         <ListView
             android:layout_width="?android:attr/listPreferredItemHeight"
             android:layout_height="match_parent"
