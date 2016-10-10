@@ -16,4 +16,17 @@
 
     <string name="preferences_entryValue_sort_by_popularity">sort_by_popularity</string>
     <string name="preferences_entryValue_sort_by_rating">sort_by_rating</string>
+
+
+    <string-array name="sortOrderArray">
+        <item>Most Popular Movies</item>
+        <item>Top Rated Movies</item>
+        <item>My Favorites</item>
+    </string-array>
+
+    <string-array name="sortOrderValues">
+        <item>popular</item>
+        <item>topRated</item>
+        <item>favorites</item>
+    </string-array>
 </resources>

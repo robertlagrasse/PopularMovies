@@ -26,22 +26,12 @@ public class GridFragment extends Fragment {
 
     // Provides the reference back to MainActivity
     Communicator communicator;
-    Context mContext;
-    gvCursorAdapter adapter;
-    Cursor cursor;
+    View theView;
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.e("Grid", "onResume");
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.grid_fragment, container, false);
-        Log.e("Grid","onCreateView");
-
-        mContext = getActivity();
+        Context mContext = getActivity();
         communicator = (Communicator) getActivity();
 
         SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -52,18 +42,18 @@ public class GridFragment extends Fragment {
             searchtype = TMDBContract.buildTopRatedURI();
         }
 
-        cursor = mContext.getContentResolver().query(
+        Cursor cursor = mContext.getContentResolver().query(
                 searchtype,
                 null,
                 null,
                 null,
                 null);
 
-        adapter = new gvCursorAdapter(
+        gvCursorAdapter adapter = new gvCursorAdapter(
                 getActivity(),
                 cursor);
 
-        GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
+        GridView gridview = (GridView) theView.findViewById(R.id.gridview);
         gridview.setAdapter(adapter);
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -81,6 +71,13 @@ public class GridFragment extends Fragment {
                 communicator.respond();
             }
         });
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View rootView = inflater.inflate(R.layout.grid_fragment, container, false);
+        Log.e("Grid","onCreateView");
+        theView = rootView;
         return rootView;
     }
 

@@ -8,5 +8,6 @@
     <string name="preferences_key_sort_by">sort by</string>
     <string name="preferences_title_sort_by">Sort Movies By</string>
     <string name="preferences_defaultValue_sort_by">sort_by_popularity</string>
+    <string name="sortOrder">sortOrder</string>
 
 </resources>
