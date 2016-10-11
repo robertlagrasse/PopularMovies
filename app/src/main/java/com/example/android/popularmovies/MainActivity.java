@@ -18,18 +18,18 @@ public class MainActivity extends AppCompatActivity implements Communicator {
     static final String DISPLAY_FRAGMENT_TAG = "display";
     static final String LAST_SEEN_TAG = "LAST_SEEN_TAG";
     String LastVisible;
-
+    boolean TwoPane;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (savedInstanceState != null){
+  /*      if (savedInstanceState != null){
             LastVisible = savedInstanceState.getString(LAST_SEEN_TAG);
         }
         else {
             LastVisible = GRID_FRAGMENT_TAG;
         }
-        Log.e("onCreate()", "LastVisible: " + LastVisible);
+  */
 
         InternetDownloadTask pull = new InternetDownloadTask(this);
         pull.updateMovies();
@@ -37,24 +37,18 @@ public class MainActivity extends AppCompatActivity implements Communicator {
         // When the application fires up, set the default preferences
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-        // Create a FragmentManager and start a fragmentTransaction
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        if (findViewById(R.id.display_activity)!=null){
+            TwoPane = true;
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        switch (LastVisible) {
-            case DISPLAY_FRAGMENT_TAG: {
-                Log.e("onCreate()","DISPLAY_FRAGMENT_TAG case reached.");
-                DisplayFragment displayFragment = new DisplayFragment();
-                fragmentTransaction.replace(R.id.activity_main, displayFragment, DISPLAY_FRAGMENT_TAG);
-                break;
-            }
-            default: {
-                Log.e("onCreate()","default case reached.");
-                GridFragment gridFragment = new GridFragment();
-                fragmentTransaction.add(R.id.activity_main, gridFragment, GRID_FRAGMENT_TAG);
-            }
+            DisplayFragment displayFragment = new DisplayFragment();
+            fragmentTransaction.add(R.id.display_activity, displayFragment, DISPLAY_FRAGMENT_TAG);
+            fragmentTransaction.commit();
         }
-        fragmentTransaction.commit();
+        else {
+            TwoPane=false;
+        }
     }
 
     @Override

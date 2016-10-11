@@ -96,6 +96,7 @@ public class DisplayFragment extends Fragment {
             Log.e("SELECTED_MOVIE:", (cursor.getString(cursor.getColumnIndex(TMDBContract.UserMetrics.COLUMN_SELECTED_MOVIE))));
         } else {
             Log.e("DisplayFragment", "Cursor returned no rows");
+            moviequery = 1;
         }
         cursor.close();
 
