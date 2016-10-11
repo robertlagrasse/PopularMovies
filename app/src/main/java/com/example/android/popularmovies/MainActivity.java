@@ -9,6 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+
+import static android.provider.AlarmClock.EXTRA_MESSAGE;
 
 public class MainActivity extends AppCompatActivity implements Communicator {
     static final String GRID_FRAGMENT_TAG = "grid";
@@ -73,17 +76,9 @@ public class MainActivity extends AppCompatActivity implements Communicator {
 
     @Override
     public void respond() {
-
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        // Create an instance of GridFragment and drop it on activity_main
-        DisplayFragment displayFragment = new DisplayFragment();
-        // displayFragment.setPassedMovie(data);
-
-        fragmentTransaction.addToBackStack(GRID_FRAGMENT_TAG);
-        fragmentTransaction.replace(R.id.activity_main, displayFragment, DISPLAY_FRAGMENT_TAG);
-        fragmentTransaction.commit();
+        // Fire up DisplayActivity by intent.
+        Intent intent = new Intent(this, DisplayActivity.class);
+        startActivity(intent);
     }
 
     @Override

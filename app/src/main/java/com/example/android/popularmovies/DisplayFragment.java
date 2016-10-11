@@ -64,16 +64,20 @@ public class DisplayFragment extends Fragment {
     Context context;
     ArrayList<DisplayExtras> extras;
     ListViewArrayAdapter adapter;
+
+    String LOG = "GridFragment";
     @Override
     public void onResume() {
+        Log.e(LOG, "onResume");
+
         super.onResume();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        final View rootView = inflater.inflate(R.layout.display_activity, container, false);
+        Log.e(LOG, "onCreateView");
+        final View rootView = inflater.inflate(R.layout.display_fragment, container, false);
 
         context = getActivity();
         Cursor cursor;
@@ -142,7 +146,6 @@ public class DisplayFragment extends Fragment {
             likeImage = R.drawable.dolike;
         }
         LikeButton.setImageResource(likeImage);
-
 
         LikeButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -219,6 +222,7 @@ public class DisplayFragment extends Fragment {
     }
 
     private Uri buildURI(int type, long movieID){
+        Log.e(LOG, "buildURI");
         final String VALUE_BASE_URL = "https://api.themoviedb.org/3/movie/";
 
 
@@ -258,7 +262,7 @@ public class DisplayFragment extends Fragment {
 
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
-
+            Log.e(LOG, "doInBackground");
             try {
                 URL url = new URL(builtUri.toString());
 
