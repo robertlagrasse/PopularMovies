@@ -64,12 +64,11 @@ public class DisplayFragment extends Fragment {
     Context context;
     ArrayList<DisplayExtras> extras;
     ListViewArrayAdapter adapter;
-
     String LOG = "GridFragment";
+
     @Override
     public void onResume() {
         Log.e(LOG, "onResume");
-
         super.onResume();
     }
 
@@ -153,30 +152,29 @@ public class DisplayFragment extends Fragment {
                 // Read Status
                 ContentValues values = new ContentValues();
                 values.clear();
+                Communicator communicator = (Communicator) getActivity();
                 if(movie.getMovie_favorite().equals("false")){
                     movie.setMovie_favorite("true");
                     values.put(TMDBContract.MovieEntry.MOVIE_USER_FAVORITE, "true");                    // Update Image with true image
                     Toast.makeText(getActivity(), "Added to Favorites",
                             Toast.LENGTH_LONG).show();
                     LikeButton.setImageResource(R.drawable.dolike);
+                    communicator.likeButton();
                 } else {
                     movie.setMovie_favorite("false");
                     values.put(TMDBContract.MovieEntry.MOVIE_USER_FAVORITE, "false");                    // Update Image with false image
                     Toast.makeText(getActivity(), "Removed from Favorites",
                             Toast.LENGTH_LONG).show();
                     LikeButton.setImageResource(R.drawable.mightlike);
+                    communicator.likeButton();
                 }
                 // Update database
                 int response = context.getContentResolver().update(TMDBContract.buildMovieURI(Long.parseLong(movie.getMovie_id())),
                         values,
                         TMDBContract.MovieEntry.MOVIE_ID + " = ?",
                         new String[]{movie.getMovie_id()});
-                Log.e("Update", "response: " + response);
             }
         });
-
-
-
 
         TextView titleBar = (TextView) rootView.findViewById(R.id.title_bar);
 

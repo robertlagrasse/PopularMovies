@@ -71,8 +71,29 @@ public class MainActivity extends AppCompatActivity implements Communicator {
     @Override
     public void respond() {
         // Fire up DisplayActivity by intent.
-        Intent intent = new Intent(this, DisplayActivity.class);
-        startActivity(intent);
+        if (TwoPane){
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+            DisplayFragment displayFragment = new DisplayFragment();
+            fragmentTransaction.add(R.id.display_activity, displayFragment, DISPLAY_FRAGMENT_TAG);
+            fragmentTransaction.commit();
+        }
+        else {
+            Intent intent = new Intent(this, DisplayActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void likeButton() {
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        GridFragment gridFragment = new GridFragment();
+        fragmentTransaction.add(R.id.activity_main, gridFragment, GRID_FRAGMENT_TAG);
+        fragmentTransaction.commit();
+
     }
 
     @Override

@@ -12,7 +12,7 @@ import android.util.Log;
  * Created by robert on 10/10/16.
  */
 
-public class DisplayActivity extends AppCompatActivity {
+public class DisplayActivity extends AppCompatActivity implements Communicator{
     static final String GRID_FRAGMENT_TAG = "grid";
     static final String DISPLAY_FRAGMENT_TAG = "display";
     static final String LAST_SEEN_TAG = "LAST_SEEN_TAG";
@@ -31,5 +31,15 @@ public class DisplayActivity extends AppCompatActivity {
         DisplayFragment displayFragment = new DisplayFragment();
         fragmentTransaction.add(R.id.display_activity, displayFragment, DISPLAY_FRAGMENT_TAG);
         fragmentTransaction.commit();
+    }
+
+    @Override
+    public void respond() {
+        // nothing to do!
+    }
+
+    @Override
+    public void likeButton() {
+        // nothing to do!
     }
 }
