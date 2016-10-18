@@ -340,8 +340,7 @@ public class DisplayFragment extends Fragment {
                 }
             }
             else{
-                Toast.makeText(getActivity(), "Problem with internet connection",
-                        Toast.LENGTH_LONG).show();
+                Log.e("DisplayFragment", "No data onPostExecute - may be first run.");
             }
         }
     }

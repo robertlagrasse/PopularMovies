@@ -8,11 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
-import static android.Manifest.permission_group.LOCATION;
-import static android.R.attr.value;
-import static com.google.android.gms.security.ProviderInstaller.PROVIDER_NAME;
 
 /**
  * Created by robert on 9/30/16.
@@ -140,8 +136,8 @@ public class MovieContentProvider extends ContentProvider {
                 retCursor = databaseManager.getReadableDatabase().query(
                         TMDBContract.MovieEntry.TABLE_NAME,
                         projection,
-                        selection,
-                        selectionArgs,
+                        TMDBContract.MovieEntry.MOVIE_USER_FAVORITE + "= ?",
+                        new String[]{"true"},
                         null,
                         null,
                         sortOrder

@@ -41,6 +41,9 @@ public class GridFragment extends Fragment {
         if (sortBy.equals("sort_by_rating")){
             searchtype = TMDBContract.buildTopRatedURI();
         }
+        if (sortBy.equals("sort_by_favorites")){
+            searchtype = TMDBContract.buildFavoritesURI();
+        }
 
         Cursor cursor = mContext.getContentResolver().query(
                 searchtype,
