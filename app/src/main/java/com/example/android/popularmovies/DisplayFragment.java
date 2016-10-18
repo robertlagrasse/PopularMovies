@@ -109,6 +109,8 @@ public class DisplayFragment extends Fragment {
 
         // Populate the movie object
         final MovieObject movie = new MovieObject();
+
+
         if (cursor.moveToFirst()) {
             movie.setMovie_poster_path(cursor.getString(cursor.getColumnIndex(MOVIE_POSTER_PATH)));
             movie.setMovie_overview(cursor.getString(cursor.getColumnIndex(MOVIE_OVERVIEW)));
@@ -128,17 +130,28 @@ public class DisplayFragment extends Fragment {
             movie.setMovie_favorite(cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_USER_FAVORITE)));
 
         } else {
+            // Load it up with dummy information, or an instruction screen!
             Log.e("DisplayFragment", "Cursor returned no rows");
+            movie.setMovie_poster_path("junk");
+            movie.setMovie_overview("This is the best Popular Movies Application, ever.");
+            movie.setMovie_release_date("Version 1 - October 2016");
+            movie.setMovie_title("Welcome to Popular Movies!");
+            movie.setMovie_id("-1");
+            movie.setMovie_vote_average(5);
+            movie.setMovie_favorite("true");
+
         }
         cursor.close();
 
         ImageView poster = (ImageView) rootView.findViewById(R.id.posterpath);
 
+        // Log.e("Poster",baseurl.concat(movie.getMovie_poster_path()));
+
         Picasso.with(getActivity())
                 .load(baseurl.concat(movie.getMovie_poster_path()))
+                .placeholder(R.drawable.tupac)
                 .into(poster);
 
-        Log.e("Poster",baseurl.concat(movie.getMovie_poster_path()));
 
         final ImageView LikeButton = (ImageView) rootView.findViewById(R.id.like_button);
         int likeImage = R.drawable.mightlike;
@@ -169,10 +182,12 @@ public class DisplayFragment extends Fragment {
                     communicator.likeButton();
                 }
                 // Update database
-                int response = context.getContentResolver().update(TMDBContract.buildMovieURI(Long.parseLong(movie.getMovie_id())),
-                        values,
-                        TMDBContract.MovieEntry.MOVIE_ID + " = ?",
-                        new String[]{movie.getMovie_id()});
+                if (Long.parseLong(movie.getMovie_id()) > -1){
+                    int response = context.getContentResolver().update(TMDBContract.buildMovieURI(Long.parseLong(movie.getMovie_id())),
+                            values,
+                            TMDBContract.MovieEntry.MOVIE_ID + " = ?",
+                            new String[]{movie.getMovie_id()});
+                }
             }
         });
 
@@ -296,8 +311,6 @@ public class DisplayFragment extends Fragment {
 
             } catch (IOException e) {
                 Log.e("doInBackground()", "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attempting
-                // to parse it.
                 return null;
             } finally {
                 if (urlConnection != null) {
@@ -316,15 +329,20 @@ public class DisplayFragment extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            try {
-                extras.addAll(parseJSONdata(s, builtUri.getPathSegments().get(3)));
-                adapter.notifyDataSetChanged();
-                Log.e("onPostExecute", "extras.size()" + extras.size());
-            }
-            catch (JSONException e) {
-                e.printStackTrace();
-            }
+            if (s != null) {
+                try {
+                    extras.addAll(parseJSONdata(s, builtUri.getPathSegments().get(3)));
+                    adapter.notifyDataSetChanged();
+                    Log.e("onPostExecute", "extras.size()" + extras.size());
+                } catch (JSONException e) {
+                    e.printStackTrace();
 
+                }
+            }
+            else{
+                Toast.makeText(getActivity(), "Problem with internet connection",
+                        Toast.LENGTH_LONG).show();
+            }
         }
     }
 
