@@ -32,11 +32,15 @@ public class GridFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Context mContext = getActivity();
+
+        // Interface for callback
         communicator = (Communicator) getActivity();
 
+        // Look at the preferences to see what the user wants to see
         SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sortBy = userPreferences.getString(getString(R.string.preferences_key_sort_by),getString(R.string.preferences_entryValue_sort_by_rating));
 
+        // Build the appropriate URI based on user preferences
         Uri searchtype = TMDBContract.buildPopularURI();
         if (sortBy.equals("sort_by_rating")){
             searchtype = TMDBContract.buildTopRatedURI();
@@ -45,6 +49,7 @@ public class GridFragment extends Fragment {
             searchtype = TMDBContract.buildFavoritesURI();
         }
 
+        // send the appropriate URI to the content resolver to retrieve data from database (content provider)
         Cursor cursor = mContext.getContentResolver().query(
                 searchtype,
                 null,
@@ -52,13 +57,18 @@ public class GridFragment extends Fragment {
                 null,
                 null);
 
+        // send cursor to cursor adapter to associate data with views for gridview
         gvCursorAdapter adapter = new gvCursorAdapter(
                 getActivity(),
                 cursor);
 
+        // reference to gridview
         GridView gridview = (GridView) theView.findViewById(R.id.gridview);
+
+        // set adapter on gridview
         gridview.setAdapter(adapter);
 
+        // Listen for clicks on Gridview
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view,
@@ -67,10 +77,12 @@ public class GridFragment extends Fragment {
                 ContentValues values = new ContentValues();
                 values.put(TMDBContract.UserMetrics.COLUMN_SELECTED_MOVIE, id);
 
+                // Drop selected item into table in database for later reference
                 Uri insertedUri = getActivity().getContentResolver().insert(
                         TMDBContract.buildUserSelectionURI(),
                         values
                 );
+                // Alert the calling activity of a user selection
                 communicator.respond();
             }
         });
@@ -79,7 +91,6 @@ public class GridFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.grid_fragment, container, false);
-        Log.e("Grid","onCreateView");
         theView = rootView;
         return rootView;
     }

@@ -19,7 +19,8 @@
                 android:text="@string/title_bar"
                 android:layout_margin="4dp"
                 android:textSize="@dimen/text_size_title"
-                android:textColor="@color/color_text_display_activity"/>
+                android:textColor="@color/color_text_display_activity"
+                android:gravity="center" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -27,14 +28,15 @@
                 android:text="@string/release_date"
                 android:layout_margin="4dp"
                 android:textSize="@dimen/text_size_release"
-                android:textColor="@color/color_text_display_activity"/>
+                android:textColor="@color/color_text_display_activity"
+                android:gravity="center" />
             <ImageView
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:id="@+id/posterpath"
                 android:scaleType="fitCenter"
                 android:layout_margin="4dp"
-                android:src="@drawable/tupac"
+                android:src="@drawable/blank"
                 android:layout_gravity="center_horizontal"/>
             <RatingBar
                 android:layout_width="wrap_content"
@@ -52,7 +54,8 @@
                 android:layout_margin="4dp"
                 android:textSize="@dimen/text_size_description"
                 android:textColor="@color/color_text_display_activity"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center_horizontal"
+                android:gravity="center" />
         </LinearLayout>
     </ScrollView>
     <LinearLayout
@@ -62,7 +65,7 @@
         <ImageView
             android:layout_width="?android:attr/listPreferredItemHeight"
             android:layout_height="?android:attr/listPreferredItemHeight"
-            android:src="@drawable/tupac"
+            android:src="@drawable/blank"
             android:scaleType="centerCrop"
             android:id="@+id/like_button"/>
         <ListView

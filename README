@@ -1,6 +1,6 @@
 API Key instructions:
 
-GridFragment.java contains
+TMDBContract.java contains
 
 final String VALUE_API_KEY = "*** YOUR API KEY GOES HERE ***";
 

@@ -1,3 +1,11 @@
+
+/* DisplayFragment exists to display detail information about a specific movie.
+ * It's launched by intent, and the intent includes a ArrayList.
+ *
+ * The ArrayList is picked apart, and the elements are used to populate the
+ * views in the layout.
+ */
+
 package com.example.android.popularmovies;
 
 import android.app.Fragment;
@@ -47,12 +55,6 @@ import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_TI
 import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_VIDEO;
 import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_VOTE_AVERAGE;
 import static com.example.android.popularmovies.TMDBContract.MovieEntry.MOVIE_VOTE_COUNT;
-/* DisplayActivity exists to display detail information about a specific movie.
- * It's launched by intent, and the intent includes a ArrayList.
- *
- * The ArrayList is picked apart, and the elements are used to populate the
- * views in the layout.
- */
 
 public class DisplayFragment extends Fragment {
     // The arraylist of extras passed with the intent is called "movie_details"
@@ -68,14 +70,12 @@ public class DisplayFragment extends Fragment {
 
     @Override
     public void onResume() {
-        Log.e(LOG, "onResume");
         super.onResume();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e(LOG, "onCreateView");
         final View rootView = inflater.inflate(R.layout.display_fragment, container, false);
 
         context = getActivity();
@@ -88,18 +88,19 @@ public class DisplayFragment extends Fragment {
                 null,
                 null,
                 TMDBContract.UserMetrics.COLUMN_UID + " DESC LIMIT 1");
+
         long moviequery = 0;
 
         if (cursor.moveToFirst()) {
+            // Look in the UserMetrics table - what was the last movie the user selected?
             moviequery = Long.parseLong((cursor.getString(cursor.getColumnIndex(TMDBContract.UserMetrics.COLUMN_SELECTED_MOVIE))));
-            Log.e("SELECTED_MOVIE:", (cursor.getString(cursor.getColumnIndex(TMDBContract.UserMetrics.COLUMN_SELECTED_MOVIE))));
         } else {
-            Log.e("DisplayFragment", "Cursor returned no rows");
+            // Nothing in the UserMetrics table? Point to the first movie.
             moviequery = 1;
         }
         cursor.close();
 
-        // Pull the details on the selected movie
+        // Pull the details on the selected movie from the MovieEntry table
         cursor = getActivity().getContentResolver().query(
                 TMDBContract.buildMovieURI(moviequery),
                 TMDBContract.MovieEntry.MOVIE_ALL_KEYS,
@@ -109,7 +110,6 @@ public class DisplayFragment extends Fragment {
 
         // Populate the movie object
         final MovieObject movie = new MovieObject();
-
 
         if (cursor.moveToFirst()) {
             movie.setMovie_poster_path(cursor.getString(cursor.getColumnIndex(MOVIE_POSTER_PATH)));
@@ -130,7 +130,8 @@ public class DisplayFragment extends Fragment {
             movie.setMovie_favorite(cursor.getString(cursor.getColumnIndex(TMDBContract.MovieEntry.MOVIE_USER_FAVORITE)));
 
         } else {
-            // Load it up with dummy information, or an instruction screen!
+            // Load it up with dummy information if you don't find anything in the MovieEntry table
+            // This happens the first time the app is fired up, as it hasn't been populated yet.
             Log.e("DisplayFragment", "Cursor returned no rows");
             movie.setMovie_poster_path("junk");
             movie.setMovie_overview("This is the best Popular Movies Application, ever.");
@@ -143,23 +144,26 @@ public class DisplayFragment extends Fragment {
         }
         cursor.close();
 
+        // reference to the poster
         ImageView poster = (ImageView) rootView.findViewById(R.id.posterpath);
 
-        // Log.e("Poster",baseurl.concat(movie.getMovie_poster_path()));
-
+        // Load poster image
         Picasso.with(getActivity())
                 .load(baseurl.concat(movie.getMovie_poster_path()))
-                .placeholder(R.drawable.tupac)
+                .placeholder(R.drawable.blank)
                 .into(poster);
 
-
+        // reference to the imageView, which I'm using as a button
         final ImageView LikeButton = (ImageView) rootView.findViewById(R.id.like_button);
+
+        // image we'll display depends upon whether the user likes this selection
         int likeImage = R.drawable.mightlike;
         if (movie.getMovie_favorite().equals("true")){
             likeImage = R.drawable.dolike;
         }
         LikeButton.setImageResource(likeImage);
 
+        // Listen for clicks on the LikeButton imageview
         LikeButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Read Status
@@ -191,43 +195,69 @@ public class DisplayFragment extends Fragment {
             }
         });
 
+        // Reference to titleBar and assignment.
         TextView titleBar = (TextView) rootView.findViewById(R.id.title_bar);
-
         titleBar.setText(movie.getMovie_title());
 
+        // reference to releaseDate and assignment
         TextView releaseDate = (TextView) rootView.findViewById(R.id.release_date);
         releaseDate.setText(movie.getMovie_release_date());
 
+        // reference to summaryText and assignment
         TextView summaryText = (TextView) rootView.findViewById(R.id.summary_text);
         summaryText.setText(movie.getMovie_overview());
 
+        // reference to ratingBar and assignment.
         RatingBar ratingBar = (RatingBar) rootView.findViewById(R.id.rating_bar);
         float rating = Float.parseFloat(String.valueOf(movie.getMovie_vote_average()));
+
+        // rating bar is on a 5 point scale, database is on a 10 point scale. Adjusting...
         ratingBar.setRating((float) (rating/2.0));
 
-        Log.e("moviequery", "sending " +moviequery);
+        // get the movieid from the object.
         long movieid = Long.parseLong(movie.getMovie_id());
 
-        // Grab any reviews or trailers
+        // Place for the reviews and trailers to sit
         extras = new ArrayList<>();
+
+        // Way to bind movies and trailers to a listview
         adapter = new ListViewArrayAdapter(getActivity(), R.id.display_list_view, extras);
+
+        // reference to the listview
         final ListView listView = (ListView) rootView.findViewById(R.id.display_list_view);
+
+        // set adapter on listview
         listView.setAdapter(adapter);
+
+        // Now that we're all setup, let's get the trailers and reviews
+        //Build Async Task
         GetMovieExtras getsome = new GetMovieExtras();
+
+        // Tell the Async Task to get Trailers for this movie
         getsome.setBuiltUri(buildURI(1, movieid));
+
+        // Go! Async task will handle parsing and dropping into ArrayList
         getsome.execute();
-        // Parse
-        // Drop into ArrayList<DisplayExtras>
+
+        // Rinse and repeat for trailers
         GetMovieExtras getmore = new GetMovieExtras();
         getmore.setBuiltUri(buildURI(2, movieid));
         getmore.execute();
 
+        // Listen for clicks on reviews and trailers
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                // Grab the URL associated with the user selection
                 String location = extras.get(i).getLocation();
+
+                // Fire up a new intent
                 Intent intent = new Intent(Intent.ACTION_VIEW);
+
+                // Add the URI to the intent
                 intent.setData(Uri.parse(location));
+
+                // Fire!
                 startActivity(intent);
             }
         });
@@ -236,13 +266,8 @@ public class DisplayFragment extends Fragment {
     }
 
     private Uri buildURI(int type, long movieID){
-        Log.e(LOG, "buildURI");
         final String VALUE_BASE_URL = "https://api.themoviedb.org/3/movie/";
 
-
-        final String PARAMETER_SORT_BY = "sort_by";
-        final String VALUE_SORT_BY_POPULARITY = "popular";
-        final String VALUE_SORT_BY_RATING = "top_rated";
 
         final String PARAMETER_API_KEY = "api_key";
         final int VIDEOS = 1;
@@ -255,7 +280,6 @@ public class DisplayFragment extends Fragment {
             webRequest = VALUE_BASE_URL + movieID + "/videos";
         } else {
             webRequest = VALUE_BASE_URL + movieID + "/reviews";
-
         }
         // Build the URL
         return Uri.parse(webRequest).buildUpon()
@@ -271,12 +295,12 @@ public class DisplayFragment extends Fragment {
             builtUri = uri;
         }
 
+        // this is the .execute of the Async task. Returns hit onPostExecute()
         @Override
         protected String doInBackground(String... strings) {
-
+            // Go get the data
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
-            Log.e(LOG, "doInBackground");
             try {
                 URL url = new URL(builtUri.toString());
 
@@ -304,13 +328,14 @@ public class DisplayFragment extends Fragment {
                     return null;
                 }
                 // If everything worked out with the connection, dump the buffer into rawData
-                // Log.e("doInBackground", builtUri.getPathSegments().get(3));
                 String rawData = buffer.toString();
-                // Log.e("Download",rawData);
+
+                // This information gets sent to onPostExecute()
                 return rawData;
 
             } catch (IOException e) {
-                Log.e("doInBackground()", "Error ", e);
+                // drop an error in the log if something goes wrong
+                Log.e(LOG, "doInBackground() Error ", e);
                 return null;
             } finally {
                 if (urlConnection != null) {
@@ -320,7 +345,8 @@ public class DisplayFragment extends Fragment {
                     try {
                         reader.close();
                     } catch (final IOException e) {
-                        Log.e("doInBackground()", "Error closing stream", e);
+                        // drop an error in the log if something goes wrong
+                        Log.e(LOG, "doInBackground() Error closing stream", e);
                     }
                 }
             }
@@ -329,14 +355,16 @@ public class DisplayFragment extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            // if we received data, parse it.
             if (s != null) {
                 try {
+                    // take raw data (s), send it to parseJSONdata along with the type (videos or reviews, from URI)
+                    // add the returned arraylist to extras
                     extras.addAll(parseJSONdata(s, builtUri.getPathSegments().get(3)));
+                    // Let the adapter know there's new data
                     adapter.notifyDataSetChanged();
-                    Log.e("onPostExecute", "extras.size()" + extras.size());
                 } catch (JSONException e) {
                     e.printStackTrace();
-
                 }
             }
             else{
@@ -360,29 +388,25 @@ public class DisplayFragment extends Fragment {
        // Split the JSON object up into an array, Keyed on "results"
        JSONArray movieJSONArray = blobOfJSON.getJSONArray(RESULTS);
 
-       Log.e("JSONParser", "JSONArray.length()" + movieJSONArray.length());
-
-       // ArrayList to hold all of the extracted movies
+       // ArrayList to hold all of the extracted movie reviews and trailers
        ArrayList<DisplayExtras> extras = new ArrayList<>();
 
        // Iterate through the JSON array
        for (int i = 0; i < movieJSONArray.length(); i++) {
             // Build an object to look at this JSON
             JSONObject tempJSON = movieJSONArray.getJSONObject(i);
-            // Build a CV object to hold the extracted data
+            // Build a DisplayExtras object to hold the extracted data
             DisplayExtras displayExtras = new DisplayExtras();
             displayExtras.setType(type);
             if (type.equals("videos")){
                 displayExtras.setLocation("https://www.youtube.com/watch?v=" + tempJSON.getString(KEY));
-                Log.e("PARSER","Matched VIDEOS " + displayExtras.getLocation());
             }
            else {
                 displayExtras.setLocation(tempJSON.getString(URL));
-                Log.e("PARSER","Matched Reviews " + displayExtras.getLocation());
             }
             extras.add(displayExtras);
         }
-       Log.e("PARSER","EXITED LOOP");
+       // send back the populated arraylist
        return extras;
    }
 }

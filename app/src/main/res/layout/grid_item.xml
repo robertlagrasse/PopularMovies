@@ -6,7 +6,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/tupac"
+        android:src="@drawable/blank"
         android:id="@+id/poster_image"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"

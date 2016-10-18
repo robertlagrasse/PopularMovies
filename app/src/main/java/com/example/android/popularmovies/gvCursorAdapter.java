@@ -2,23 +2,13 @@ package com.example.android.popularmovies;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.ResourceCursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-
-import static android.R.attr.path;
-import static com.example.android.popularmovies.ViewHolder.favorite;
-import static java.security.AccessController.getContext;
 
 /**
  * Created by robert on 10/3/16.
@@ -55,8 +45,7 @@ public class gvCursorAdapter extends CursorAdapter {
         poster.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
         // Load the poster image
-        Picasso.with(context).load(baseurl.concat(path)).placeholder(R.drawable.tupac).into(poster);
-
+        Picasso.with(context).load(baseurl.concat(path)).placeholder(R.drawable.blank).into(poster);
 
 
     }

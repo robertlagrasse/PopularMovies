@@ -10,20 +10,21 @@ import android.util.Log;
 
 /**
  * Created by robert on 10/10/16.
+ * Display activity is responsible for the launch of the DisplayFragment in single pane mode.
+ * This does not get invoked in two pane mode.
+ *
+ * repond() and likeButton() are required as the activity implements Communicator, and the
+ * DisplayFragment will call it.
  */
 
 public class DisplayActivity extends AppCompatActivity implements Communicator{
-    static final String GRID_FRAGMENT_TAG = "grid";
     static final String DISPLAY_FRAGMENT_TAG = "display";
     static final String LAST_SEEN_TAG = "LAST_SEEN_TAG";
-    String LOG = "DisplayActivity";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.display_activity);
-
-        Log.e(LOG, "onCreate");
 
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

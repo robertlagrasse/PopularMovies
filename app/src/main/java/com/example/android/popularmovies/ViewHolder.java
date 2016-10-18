@@ -5,6 +5,9 @@ import android.widget.ImageView;
 
 /**
  * Created by robert on 10/5/16.
+ *
+ * Viewholder pattern is used to cut down on the references needed
+ * improving efficiency when populating the view.
  */
 
 public class ViewHolder {

@@ -9,5 +9,5 @@
         android:layout_height="?android:attr/listPreferredItemHeight"
         android:scaleType="centerCrop"
         android:id="@+id/listview_item_image"
-        android:src="@drawable/tupac"/>
+        android:src="@drawable/blank"/>
 </LinearLayout>

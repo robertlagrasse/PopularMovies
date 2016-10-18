@@ -43,10 +43,6 @@ public class TMDBContract {
     public static final Uri CONTENT_URI =
             BASE_CONTENT_URI.buildUpon().appendPath(MOVIE_PATH).build();
 
-//    public static final String CONTENT_TYPE =
-//            ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + MOVIE_PATH;
-//    public static final String CONTENT_ITEM_TYPE =
-//            ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + MOVIE_PATH;
 
     public static Uri buildMovieURI(long id) {
         return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -66,19 +62,13 @@ public class TMDBContract {
     }
 
     public static final class MovieEntry implements BaseColumns {
-
-        // The content URI represents the base location for this table
-
-
-
-
         /*
         This class defines the properties of each movie. This is identical to
         the fields as they come down in JSON from TMDB.
 
-        The exception is result type. This additional field will keep
+        Three additional fields will keep
         track of whether the movie's presence in the database is
-        the result of a search based on popularity, or rating
+        the result of a search based on favorite, popularity, or rating
      */
 
         public static final String TABLE_NAME                 = "movies";

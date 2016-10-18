@@ -23,20 +23,15 @@ public class MainActivity extends AppCompatActivity implements Communicator {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-  /*      if (savedInstanceState != null){
-            LastVisible = savedInstanceState.getString(LAST_SEEN_TAG);
-        }
-        else {
-            LastVisible = GRID_FRAGMENT_TAG;
-        }
-  */
 
+        // Create an internet download task, and go get the data
         InternetDownloadTask pull = new InternetDownloadTask(this);
         pull.updateMovies();
 
         // When the application fires up, set the default preferences
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
+        // If we're in two pane mode, I can see display_activity, so I'll have to fill that.
         if (findViewById(R.id.display_activity)!=null){
             TwoPane = true;
             FragmentManager fragmentManager = getFragmentManager();
@@ -70,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements Communicator {
 
     @Override
     public void respond() {
-        // Fire up DisplayActivity by intent.
+        // Two pane mode, kick off a new Display Fragment
         if (TwoPane){
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -80,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements Communicator {
             fragmentTransaction.commit();
         }
         else {
+            // One Pane mode - fire off a new Activity to handle the fragment
             Intent intent = new Intent(this, DisplayActivity.class);
             startActivity(intent);
         }
@@ -87,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements Communicator {
 
     @Override
     public void likeButton() {
+        // Someone liked a movie. Refresh the grid so those results are reflected
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
@@ -99,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements Communicator {
     @Override
     protected void onStop() {
         super.onStop();
-        Log.e("MainActivity", "onStop() called.");
     }
 
     @Override
@@ -116,9 +112,7 @@ public class MainActivity extends AppCompatActivity implements Communicator {
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        Log.e("onRestoreInstanceState","onRestoreInstanceState");
         LastVisible = savedInstanceState.getString(LAST_SEEN_TAG);
-        Log.e("onRestoreInstanceState","LastVisible was: " + LastVisible);
     }
 }
 

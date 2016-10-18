@@ -13,9 +13,6 @@ import android.support.annotation.Nullable;
 /**
  * Created by robert on 9/30/16.
  *
- * ContentProviders suck, right up until you begin to see why they don't suck.
- * This content provider essentially front ends DatabaseAdapter.
- *
  * All requests to talk to the database come in a standard URI form. This
  * content provider then parses the URI, and sends the DatabaseAdapter
  * whatever it's expecting to see in order to illicit the appropriate response.
@@ -229,7 +226,6 @@ public class MovieContentProvider extends ContentProvider {
             case ALL_MOVIES: {
                 long _id = db.insert(TMDBContract.MovieEntry.TABLE_NAME, null, contentValues);
                 if (_id < 0) {
-                    // TODO: This logic is broken in all cases and needs to be fixed
                     // if the id < 0, an insert wasn't made. If the id > 0, and insert
                     // was made. Either way, the returned URI should indicate the result.
                     returnUri = Uri.withAppendedPath(uri, String.valueOf(_id));

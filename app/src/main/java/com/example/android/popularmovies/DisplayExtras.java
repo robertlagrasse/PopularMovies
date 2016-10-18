@@ -1,11 +1,10 @@
 package com.example.android.popularmovies;
 
-import android.net.Uri;
-
-import static android.R.attr.type;
-
 /**
  * Created by robert on 10/7/16.
+ *
+ * DisplayExtras is a class that keeps track of the reviews and trailers for each movie.
+ * Type defines whether it's a trailer or review, location is the URL.
  */
 
 public class DisplayExtras {
